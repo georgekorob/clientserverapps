@@ -12,3 +12,10 @@
 --- '\u0440\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u043a\u0430' - набор кодовых точек
 --- используйте списки и циклы, не дублируйте функции
 """
+
+for word in ['разработка', 'сокет', 'декоратор']:
+    print(type(word), word)
+    # .encode("unicode_escape").decode('utf-8') - Аналогичен онлайн конвертеру
+    word_code = word.encode("unicode_escape").decode('utf-8')
+    print(type(word_code), word_code)
+    print()

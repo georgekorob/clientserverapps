@@ -23,3 +23,20 @@
 
 НАРУШЕНИЕ обозначенных условий - задание не выполнено!!!
 """
+import chardet
+
+file_name = 'test_file.txt'
+
+try:
+    with open(file_name, 'r', encoding='utf-8') as f:
+        text = f.read()
+        print(f'Кодировка: utf-8')
+        print(text)
+except Exception as e:
+    # print(e)
+    with open(file_name, 'rb') as f:
+        text_bytes = f.read()
+        encoding = chardet.detect(text_bytes)['encoding']
+        print(f'Кодировка: {encoding}')
+        text = text_bytes.decode(encoding)
+        print(text)

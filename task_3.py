@@ -9,3 +9,9 @@
 --- обязательно!!! усложните задачу, "отловив" и обработав исключение,
 придумайте как это сделать
 """
+
+for word in ['attribute', 'класс', 'функция', 'type']:
+    try:
+        print(bytes(word, "ascii"))
+    except UnicodeEncodeError as e:
+        print(f'"{word}" не может быть записано в байтах')
