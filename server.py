@@ -8,6 +8,24 @@ from common.utils import get_message, send_message
 
 
 class Server:
+    class ClientAccept(object):
+        def __init__(self, transport):
+            self.transport = transport
+
+        def __enter__(self):
+            try:
+                self.client, client_address = self.transport.accept()
+            except Exception as e:
+                print(e)
+                self.client, client_address = None, None
+            return self.client, client_address
+
+        def __exit__(self, exp_type, exp_value, exp_tr):
+            if exp_type is Exception:
+                self.client.close()
+                return True
+            self.client.close()
+
     def __init__(self, address, port):
         # Инициализация сокета
         self.transport = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -38,18 +56,14 @@ class Server:
         # Слушаем порт
         self.transport.listen(MAX_CONNECTIONS)
         while True:
-            client, client_address = self.transport.accept()
-            # with self.transport.accept() as accept:
-            #     client, client_address = accept
-            try:
-                message_from_client = get_message(client)
-                print(message_from_client)
-                response = self.process_client_message(message_from_client)
-                send_message(client, response)
-            except (ValueError, json.JSONDecodeError):
-                print('Принято некорретное сообщение от клиента.')
-            finally:
-                client.close()
+            with self.ClientAccept(self.transport) as (client, client_address):
+                try:
+                    message_from_client = get_message(client)
+                    print(message_from_client)
+                    response = self.process_client_message(message_from_client)
+                    send_message(client, response)
+                except (ValueError, json.JSONDecodeError):
+                    print('Принято некорретное сообщение от клиента.')
 
 
 if __name__ == '__main__':
