@@ -26,7 +26,7 @@ class Server:
                 return True
             self.client.close()
 
-    def __init__(self, address, port):
+    def __init__(self, address='', port=DEFAULT_PORT):
         # Инициализация сокета
         self.transport = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.transport.bind((address, port))
