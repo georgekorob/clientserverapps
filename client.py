@@ -10,10 +10,10 @@ from common.utils import get_message, send_message
 
 
 class Client:
-    def __init__(self, address, port):
+    def __init__(self, address=DEFAULT_IP_ADDRESS, port=DEFAULT_PORT):
         # Инициализация сокета
         self.transport = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.transport.connect((address, port))
+        self.address, self.port = address, port
 
     @staticmethod
     def create_presence(account_name='Guest'):
@@ -45,6 +45,7 @@ class Client:
 
     def start(self):
         """Инициализация обмена с сервером."""
+        self.transport.connect((self.address, self.port))
         message_to_server = self.create_presence()
         send_message(self.transport, message_to_server)
         try:
