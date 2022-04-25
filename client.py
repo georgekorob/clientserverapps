@@ -9,6 +9,7 @@ from common.variables import ACTION, PRESENCE, TIME, USER, ACCOUNT_NAME, RESPONS
 from common.utils import get_message, send_message
 import logging
 import log.client_log_config
+from decorators import Log
 
 CLIENT_LOGGER = logging.getLogger('client_logger')
 
@@ -32,6 +33,7 @@ class Client:
         self.address, self.port = address, port
 
     @staticmethod
+    @Log()
     def create_presence(account_name='Guest'):
         """
         Функция генерирует запрос о присутствии клиента.
@@ -48,6 +50,7 @@ class Client:
         }
 
     @staticmethod
+    @Log()
     def process_ans(message):
         """
         Валидация ответа от сервера.
