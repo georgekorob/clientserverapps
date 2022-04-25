@@ -1,9 +1,12 @@
 # Утилиты
 
 import json
+
+from decorators import Log
 from .variables import MAX_PACKAGE_LENGTH, ENCODING
 
 
+@Log()
 def get_message(client):
     """
     Утилита приёма и декодирования сообщения. Получает словарь в виде строки в байтах, если принято что-то другое,
@@ -21,6 +24,7 @@ def get_message(client):
     raise ValueError
 
 
+@Log()
 def send_message(sock, message):
     """
     Утилита кодирования и отправки сообщения. Принимает словарь и отправляет его.

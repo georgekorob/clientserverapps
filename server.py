@@ -7,6 +7,7 @@ from common.variables import ACTION, ACCOUNT_NAME, RESPONSE, MAX_CONNECTIONS, PR
 from common.utils import get_message, send_message
 import logging
 import log.server_log_config
+from decorators import Log
 
 SERVER_LOGGER = logging.getLogger('server_logger')
 
@@ -49,6 +50,7 @@ class Server:
         self.transport.bind((address, port))
 
     @staticmethod
+    @Log()
     def process_client_message(message):
         """
         Валидация ответа от клиента.
