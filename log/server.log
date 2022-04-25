@@ -1,8 +1,15 @@
-2022-04-21 10:55:11,809 DEBUG server.py Настройка сервера.
-2022-04-21 10:55:11,809 INFO server.py Порт для подключений: 7777, адрес с которого принимаются подключения: . Если адрес не указан, принимаются соединения с любых адресов.
-2022-04-21 10:55:11,809 DEBUG server.py Запуск сервера.
-2022-04-21 10:55:15,590 INFO server.py Установлено соедение с ПК ('127.0.0.1', 50689)
-2022-04-21 10:55:15,590 DEBUG server.py Получено сообщение {'action': 'presence', 'time': 1650527715.590309, 'user': {'account_name': 'Guest'}}
-2022-04-21 10:55:15,590 DEBUG server.py Сообщение от клиента : {'action': 'presence', 'time': 1650527715.590309, 'user': {'account_name': 'Guest'}}
-2022-04-21 10:55:15,590 INFO server.py Cформирован ответ клиенту {'response': 200}
-2022-04-21 10:55:15,590 DEBUG server.py Соединение с клиентом ('127.0.0.1', 50689) закрывается.
+2022-04-25 09:10:13,738 DEBUG server.py Настройка сервера.
+2022-04-25 09:10:13,738 INFO server.py Порт для подключений: 7777, адрес с которого принимаются подключения: . Если адрес не указан, принимаются соединения с любых адресов.
+2022-04-25 09:10:13,738 DEBUG server.py Запуск сервера.
+2022-04-25 09:10:16,291 INFO server.py Установлено соедение с ПК ('127.0.0.1', 51773)
+2022-04-25 09:10:16,291 DEBUG decorators.py 2022-04-25 09:10:16 Функция create_presence() c параметрами (), {} вызвана из модуля client функцией start.
+2022-04-25 09:10:16,291 DEBUG decorators.py 2022-04-25 09:10:16 Функция send_message() c параметрами (<socket.socket fd=456, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51773), raddr=('127.0.0.1', 7777)>, {'action': 'presence', 'time': 1650867016.291731, 'user': {'account_name': 'Guest'}}), {} вызвана из модуля common.utils функцией start.
+2022-04-25 09:10:16,307 DEBUG decorators.py 2022-04-25 09:10:16 Функция get_message() c параметрами (<socket.socket fd=128, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 51773)>,), {} вызвана из модуля common.utils функцией start.
+2022-04-25 09:10:16,307 DEBUG server.py Получено сообщение {'action': 'presence', 'time': 1650867016.291731, 'user': {'account_name': 'Guest'}}
+2022-04-25 09:10:16,307 DEBUG server.py Сообщение от клиента : {'action': 'presence', 'time': 1650867016.291731, 'user': {'account_name': 'Guest'}}
+2022-04-25 09:10:16,307 DEBUG decorators.py 2022-04-25 09:10:16 Функция process_client_message() c параметрами ({'action': 'presence', 'time': 1650867016.291731, 'user': {'account_name': 'Guest'}},), {} вызвана из модуля server функцией start.
+2022-04-25 09:10:16,307 INFO server.py Cформирован ответ клиенту {'response': 200}
+2022-04-25 09:10:16,307 DEBUG decorators.py 2022-04-25 09:10:16 Функция send_message() c параметрами (<socket.socket fd=128, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 51773)>, {'response': 200}), {} вызвана из модуля common.utils функцией start.
+2022-04-25 09:10:16,307 DEBUG server.py Соединение с клиентом ('127.0.0.1', 51773) закрывается.
+2022-04-25 09:10:16,307 DEBUG decorators.py 2022-04-25 09:10:16 Функция get_message() c параметрами (<socket.socket fd=456, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51773), raddr=('127.0.0.1', 7777)>,), {} вызвана из модуля common.utils функцией start.
+2022-04-25 09:10:16,307 DEBUG decorators.py 2022-04-25 09:10:16 Функция process_ans() c параметрами ({'response': 200},), {} вызвана из модуля client функцией start.
