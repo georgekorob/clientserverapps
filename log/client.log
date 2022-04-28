@@ -28,3 +28,31 @@
 2022-04-25 09:10:16,291 DEBUG client.py Сформировано presence сообщение для пользователя Guest
 2022-04-25 09:10:16,307 DEBUG client.py Сообщение от сервера: {'response': 200}
 2022-04-25 09:10:16,307 INFO client.py Принят ответ от сервера: 200 : OK
+2022-04-28 10:45:20,829 DEBUG client.py Настройка клиента.
+2022-04-28 10:45:20,829 DEBUG client.py ['127.0.0.1', '8888']
+2022-04-28 10:45:20,829 DEBUG client.py Настройка клиента.
+2022-04-28 10:45:20,829 DEBUG client.py ['127.0.0.1', '8888']
+2022-04-28 10:45:20,829 INFO client.py Настроен клиент с парамертами: адрес 127.0.0.1, порт 8888.
+2022-04-28 10:45:20,829 INFO client.py Настроен клиент с парамертами: адрес 127.0.0.1, порт 8888.
+2022-04-28 10:45:20,829 DEBUG client.py Сформировано presence сообщение для пользователя Guest
+2022-04-28 10:45:20,829 DEBUG client.py Сформировано presence сообщение для пользователя Guest
+2022-04-28 10:45:20,829 DEBUG client.py Настройка клиента.
+2022-04-28 10:45:20,829 DEBUG client.py ['127.0.0.1', '8888']
+2022-04-28 10:45:20,829 INFO client.py Настроен клиент с парамертами: адрес 127.0.0.1, порт 8888.
+2022-04-28 10:45:20,829 DEBUG client.py Сформировано presence сообщение для пользователя Guest
+2022-04-28 10:45:20,849 DEBUG client.py 2022-04-28 10:45:20 Функция create_presence() c параметрами (), {} вызвана из модуля __main__ функцией start.
+2022-04-28 10:45:20,849 DEBUG client.py 2022-04-28 10:45:20 Функция send_message() c параметрами (<socket.socket fd=416, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 59193), raddr=('127.0.0.1', 8888)>, {'action': 'presence', 'time': 1651131920.829346, 'user': {'account_name': 'Guest'}}), {} вызвана из модуля common.utils функцией start.
+2022-04-28 10:45:20,849 DEBUG client.py 2022-04-28 10:45:20 Функция create_presence() c параметрами (), {} вызвана из модуля __main__ функцией start.
+2022-04-28 10:45:20,849 DEBUG client.py 2022-04-28 10:45:20 Функция send_message() c параметрами (<socket.socket fd=400, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 59194), raddr=('127.0.0.1', 8888)>, {'action': 'presence', 'time': 1651131920.829346, 'user': {'account_name': 'Guest'}}), {} вызвана из модуля common.utils функцией start.
+2022-04-28 10:45:20,859 DEBUG client.py 2022-04-28 10:45:20 Функция get_message() c параметрами (<socket.socket fd=488, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 59192), raddr=('127.0.0.1', 8888)>,), {} вызвана из модуля common.utils функцией start.
+2022-04-28 10:45:20,859 DEBUG client.py Сообщение от сервера: {'response': 200}
+2022-04-28 10:45:20,859 DEBUG client.py 2022-04-28 10:45:20 Функция process_ans() c параметрами ({'response': 200},), {} вызвана из модуля __main__ функцией start.
+2022-04-28 10:45:20,859 INFO client.py Принят ответ от сервера: 200 : OK
+2022-04-28 10:45:20,869 DEBUG client.py 2022-04-28 10:45:20 Функция get_message() c параметрами (<socket.socket fd=416, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 59193), raddr=('127.0.0.1', 8888)>,), {} вызвана из модуля common.utils функцией start.
+2022-04-28 10:45:20,869 DEBUG client.py Сообщение от сервера: {'response': 200}
+2022-04-28 10:45:20,869 DEBUG client.py 2022-04-28 10:45:20 Функция process_ans() c параметрами ({'response': 200},), {} вызвана из модуля __main__ функцией start.
+2022-04-28 10:45:20,869 INFO client.py Принят ответ от сервера: 200 : OK
+2022-04-28 10:45:20,869 DEBUG client.py 2022-04-28 10:45:20 Функция get_message() c параметрами (<socket.socket fd=400, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 59194), raddr=('127.0.0.1', 8888)>,), {} вызвана из модуля common.utils функцией start.
+2022-04-28 10:45:20,869 DEBUG client.py Сообщение от сервера: {'response': 200}
+2022-04-28 10:45:20,869 DEBUG client.py 2022-04-28 10:45:20 Функция process_ans() c параметрами ({'response': 200},), {} вызвана из модуля __main__ функцией start.
+2022-04-28 10:45:20,869 INFO client.py Принят ответ от сервера: 200 : OK
