@@ -14,18 +14,18 @@ class TestServer(unittest.TestCase):
 
     def test_no_action(self):
         self.assertEqual(self.server.process_client_message({TIME: '1.1',
-                                                             USER: {ACCOUNT_NAME: 'Guest'}}),
+                                                             USER: {ACCOUNT_NAME: ''}}),
                          self.return_error)
 
     def test_wrong_action(self):
         self.assertEqual(self.server.process_client_message({ACTION: 'not presence',
                                                              TIME: '1.1',
-                                                             USER: {ACCOUNT_NAME: 'Guest'}}),
+                                                             USER: {ACCOUNT_NAME: ''}}),
                          self.return_error)
 
     def test_no_time(self):
         self.assertEqual(self.server.process_client_message({ACTION: PRESENCE,
-                                                             USER: {ACCOUNT_NAME: 'Guest'}}),
+                                                             USER: {ACCOUNT_NAME: ''}}),
                          self.return_error)
 
     def test_no_user(self):
@@ -42,7 +42,7 @@ class TestServer(unittest.TestCase):
     def test_ok_check(self):
         self.assertEqual(self.server.process_client_message({ACTION: PRESENCE,
                                                              TIME: '1.1',
-                                                             USER: {ACCOUNT_NAME: 'Guest'}}),
+                                                             USER: {ACCOUNT_NAME: ''}}),
                          self.return_ok)
 
 
