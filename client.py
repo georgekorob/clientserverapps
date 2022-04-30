@@ -3,13 +3,15 @@ import argparse
 import sys
 import json
 import socket
+import threading
 import time
 from common.variables import ACTION, PRESENCE, TIME, USER, ACCOUNT_NAME, RESPONSE, ERROR, DEFAULT_IP_ADDRESS, \
-    DEFAULT_PORT, SENDER, MESSAGE_TEXT, MESSAGE
+    DEFAULT_PORT, SENDER, MESSAGE_TEXT, MESSAGE, EXIT, DESTINATION
 from common.utils import get_message, send_message
 import logging
 import log.client_log_config
 from decorators import Log
+from os import system
 
 CLIENT_LOGGER = logging.getLogger('client_logger')
 
@@ -18,25 +20,51 @@ class Client:
     def __init__(self):
         # Инициализация сокета
         CLIENT_LOGGER.debug(f'Настройка клиента.')
-        self.address, self.port, self.client_mode = self.arg_parser()
+        self.address, self.port, self.client_name = self.arg_parser()
         CLIENT_LOGGER.info(f'Настроен клиент с парамертами: адрес сервера {self.address}, '
-                           f'порт {self.port}, режим работы: {self.client_mode}')
+                           f'порт {self.port}, имя пользователя: {self.client_name}')
         self.transport = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        system("title " + self.client_name)
 
     @staticmethod
+    def print_help():
+        """Функция выводящяя справку по использованию"""
+        print('Поддерживаемые команды:')
+        print('message - отправить сообщение. Кому и текст будет запрошены отдельно.')
+        print('help - вывести подсказки по командам')
+        print('exit - выход из программы')
+
+    @staticmethod
+    def arg_parser():
+        """Парсер аргументов коммандной строки"""
+        parser = argparse.ArgumentParser()
+        parser.add_argument('addr', default=DEFAULT_IP_ADDRESS, nargs='?')
+        parser.add_argument('port', default=DEFAULT_PORT, type=int, nargs='?')
+        parser.add_argument('-n', '--name', default='test', nargs='?')
+        namespace = parser.parse_args(sys.argv[1:])
+        address = namespace.addr
+        port = namespace.port
+        client_name = namespace.name
+
+        if not 1023 < port < 65536:
+            CLIENT_LOGGER.critical(f'Указан неподходящий порт: {port}. '
+                                   f'Допустимые адреса с 1024 до 65535.')
+            sys.exit(1)
+
+        return address, port, client_name
+
     @Log()
-    def create_presence(account_name='Guest'):
+    def create_sys_message(self, request):
         """
-        Функция генерирует запрос о присутствии клиента.
-        :param account_name: Имя пользователя.
+        Функция генерирует запрос о состоянии клиента.
         :return: Словарь запрос.
         """
-        CLIENT_LOGGER.debug(f'Сформировано {PRESENCE} сообщение для пользователя {account_name}')
+        CLIENT_LOGGER.debug(f'Сформировано {request} сообщение для пользователя {self.client_name}')
         return {
-            ACTION: PRESENCE,
+            ACTION: request,
             TIME: time.time(),
             USER: {
-                ACCOUNT_NAME: account_name
+                ACCOUNT_NAME: self.client_name
             }
         }
 
@@ -55,46 +83,76 @@ class Client:
             return f'400 : {message[ERROR]}'
         raise ValueError
 
-    @staticmethod
     @Log()
-    def create_message(sock, account_name='Guest'):
-        """Текст сообщения для отправки или завершает работу"""
-        message = input('Введите сообщение для отправки или \'q\' для завершения работы: ')
-        if message == 'q':
-            sock.close()
-            CLIENT_LOGGER.info('Завершение работы по команде пользователя.')
-            print('Спасибо за использование нашего сервиса!')
-            sys.exit(0)
+    def create_message(self):
+        """
+        Функция запрашивает кому отправить сообщение и само сообщение,
+        и отправляет полученные данные на сервер
+        :param sock:
+        :param account_name:
+        :return:
+        """
+        to_user = input('Введите получателя сообщения: ')
+        message = input('Введите сообщение для отправки: ')
         message_dict = {
             ACTION: MESSAGE,
+            SENDER: self.client_name,
+            DESTINATION: to_user,
             TIME: time.time(),
-            ACCOUNT_NAME: account_name,
             MESSAGE_TEXT: message
         }
         CLIENT_LOGGER.debug(f'Сформирован словарь сообщения: {message_dict}')
-        return message_dict
+        try:
+            send_message(self.transport, message_dict)
+            CLIENT_LOGGER.info(f'Отправлено сообщение для пользователя {to_user}')
+        except Exception as e:
+            CLIENT_LOGGER.critical(f'Потеряно соединение с сервером. {e}')
+            sys.exit(1)
 
-    @staticmethod
     @Log()
-    def message_from_server(message):
+    def message_from_server(self):
         """Функция для обработки сообщений, поступающих с сервера"""
-        if ACTION in message and \
-                message[ACTION] == MESSAGE and \
-                SENDER in message and \
-                MESSAGE_TEXT in message:
-            print(f'Получено сообщение от пользователя '
-                  f'{message[SENDER]}:\n{message[MESSAGE_TEXT]}')
-            CLIENT_LOGGER.info(f'Получено сообщение от пользователя '
-                               f'{message[SENDER]}:\n{message[MESSAGE_TEXT]}')
-        else:
-            CLIENT_LOGGER.error(f'Получено некорректное сообщение с сервера: {message}')
+        while True:
+            try:
+                message = get_message(self.transport)
+                if all([w in message for w in [ACTION, SENDER, DESTINATION, MESSAGE_TEXT]]) and \
+                        message[ACTION] == MESSAGE and \
+                        message[DESTINATION] == self.client_name:
+                    mes = f'\nПолучено сообщение от пользователя {message[SENDER]}:' \
+                          f'\n{message[MESSAGE_TEXT]}'
+                    print(mes)
+                    CLIENT_LOGGER.info(mes)
+                else:
+                    CLIENT_LOGGER.error(f'Получено некорректное сообщение с сервера: {message}')
+            except Exception as e:
+                CLIENT_LOGGER.critical(f'Потеряно соединение с сервером. {e}')
+                break
+
+    @Log()
+    def message_to_server(self):
+        """Функция взаимодействия с пользователем, запрашивает команды, отправляет сообщения"""
+        self.print_help()
+        while True:
+            command = input('Введите команду: ')
+            if command == 'message':
+                self.create_message()
+            elif command == 'help':
+                self.print_help()
+            elif command == 'exit':
+                send_message(self.transport, self.create_sys_message(EXIT))
+                print('Завершение соединения.')
+                CLIENT_LOGGER.info('Завершение работы по команде пользователя.')
+                # Задержка неоходима, чтобы успело уйти сообщение о выходе
+                time.sleep(0.5)
+                break
+            else:
+                print('Команда не распознана, попробойте снова. help - вывести поддерживаемые команды.')
 
     def start(self):
         """Инициализация обмена с сервером."""
         try:
             self.transport.connect((self.address, self.port))
-            message_to_server = self.create_presence()
-            send_message(self.transport, message_to_server)
+            send_message(self.transport, self.create_sys_message(PRESENCE))
             answer = self.process_ans(get_message(self.transport))
             CLIENT_LOGGER.info(f'Принят ответ от сервера: {answer}')
             print(f'Установлено соединение с сервером.')
@@ -103,43 +161,22 @@ class Client:
             sys.exit(1)
         else:
             # Если соединение с сервером установлено
+            # запускаем клиенский процесс приёма сообщний
+            receiver = threading.Thread(target=self.message_from_server)
+            receiver.daemon = True
+            receiver.start()
+            # запускаем отправку сообщений
+            user_send_message = threading.Thread(target=self.message_to_server)
+            user_send_message.daemon = True
+            user_send_message.start()
+            CLIENT_LOGGER.debug('Запущены процессы')
+
+            # завершаем работу, если один из потоков завершен
             while True:
-                try:
-                    if self.client_mode == 'send':
-                        print('Режим работы - отправка сообщений.')
-                        send_message(self.transport, self.create_message(self.transport))
-                    elif self.client_mode == 'listen':
-                        print('Режим работы - приём сообщений.')
-                        self.message_from_server(get_message(self.transport))
-                    else:
-                        print('Неизвестный режим работы.')
-                except (ConnectionResetError, ConnectionError, ConnectionAbortedError):
-                    CLIENT_LOGGER.error(f'Соединение с сервером {self.address} было потеряно.')
-                    sys.exit(1)
-
-    @staticmethod
-    def arg_parser():
-        """Парсер аргументов коммандной строки"""
-        parser = argparse.ArgumentParser()
-        parser.add_argument('addr', default=DEFAULT_IP_ADDRESS, nargs='?')
-        parser.add_argument('port', default=DEFAULT_PORT, type=int, nargs='?')
-        parser.add_argument('-m', '--mode', default='listen', nargs='?')
-        namespace = parser.parse_args(sys.argv[1:])
-        address = namespace.addr
-        port = namespace.port
-        client_mode = namespace.mode
-
-        if not 1023 < port < 65536:
-            CLIENT_LOGGER.critical(f'Указан неподходящий порт: {port}. '
-                                   f'Допустимые адреса с 1024 до 65535.')
-            sys.exit(1)
-
-        if client_mode not in ('listen', 'send'):
-            CLIENT_LOGGER.critical(f'Указан недопустимый режим работы {client_mode}, '
-                                   f'допустимые режимы: listen , send')
-            sys.exit(1)
-
-        return address, port, client_mode
+                time.sleep(1)
+                if receiver.is_alive() and user_send_message.is_alive():
+                    continue
+                break
 
 
 if __name__ == '__main__':
