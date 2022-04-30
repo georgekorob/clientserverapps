@@ -21,12 +21,8 @@ while True:
         PROCESS.append(subprocess.Popen(['python', 'server.py', '-a', address, '-p', port],
                                         creationflags=subprocess.CREATE_NEW_CONSOLE,
                                         env=env))
-        for i in range(2):
-            PROCESS.append(subprocess.Popen(['python', 'client.py', address, port, '-m', 'send'],
-                                            creationflags=subprocess.CREATE_NEW_CONSOLE,
-                                            env=env))
-        for i in range(2):
-            PROCESS.append(subprocess.Popen(['python', 'client.py', address, port, '-m', 'listen'],
+        for i in range(3):
+            PROCESS.append(subprocess.Popen(['python', 'client.py', address, port, '-n', f'client{i+1}'],
                                             creationflags=subprocess.CREATE_NEW_CONSOLE,
                                             env=env))
     elif ACTION == 'x':

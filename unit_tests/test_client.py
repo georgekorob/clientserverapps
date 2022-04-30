@@ -7,21 +7,21 @@ class TestClient(unittest.TestCase):
     client = Client()
 
     def test_create_presence(self):
-        test = self.client.create_presence()
+        test = self.client.create_sys_message(PRESENCE)
         test[TIME] = 1.1
         self.assertEqual(test,
-                         {ACTION: PRESENCE, TIME: 1.1, USER: {ACCOUNT_NAME: 'Guest'}})
+                         {ACTION: PRESENCE, TIME: 1.1, USER: {ACCOUNT_NAME: ''}})
 
     def test_in_presence(self):
-        test = self.client.create_presence()
+        test = self.client.create_sys_message(PRESENCE)
         self.assertIn(ACTION, test)
         self.assertIn(TIME, test)
         self.assertIn(USER, test)
         self.assertIn(ACCOUNT_NAME, test[USER])
 
     def test_presence_user(self):
-        test = self.client.create_presence()
-        self.assertEqual(test[USER][ACCOUNT_NAME], 'Guest')
+        test = self.client.create_sys_message(PRESENCE)
+        self.assertEqual(test[USER][ACCOUNT_NAME], '')
 
     def test_process_ans_200(self):
         self.assertEqual(self.client.process_ans({RESPONSE: 200}),
