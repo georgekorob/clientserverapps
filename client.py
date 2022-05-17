@@ -5,6 +5,8 @@ import json
 import socket
 import threading
 import time
+from common.descrptrs import Port, Address
+from common.metaclasses import ClientVerifier
 from common.variables import ACTION, PRESENCE, TIME, USER, ACCOUNT_NAME, RESPONSE, ERROR, DEFAULT_IP_ADDRESS, \
     DEFAULT_PORT, SENDER, MESSAGE_TEXT, MESSAGE, EXIT, DESTINATION
 from common.utils import get_message, send_message
@@ -16,7 +18,10 @@ from os import system
 CLIENT_LOGGER = logging.getLogger('client_logger')
 
 
-class Client:
+class Client(metaclass=ClientVerifier):
+    port = Port()
+    address = Address()
+
     def __init__(self):
         # Инициализация сокета
         CLIENT_LOGGER.debug(f'Настройка клиента.')
@@ -45,12 +50,6 @@ class Client:
         address = namespace.addr
         port = namespace.port
         client_name = namespace.name
-
-        if not 1023 < port < 65536:
-            CLIENT_LOGGER.critical(f'Указан неподходящий порт: {port}. '
-                                   f'Допустимые адреса с 1024 до 65535.')
-            sys.exit(1)
-
         return address, port, client_name
 
     @Log()
@@ -179,6 +178,10 @@ class Client:
                 break
 
 
-if __name__ == '__main__':
+def main():
     client = Client()
     client.start()
+
+
+if __name__ == '__main__':
+    main()
