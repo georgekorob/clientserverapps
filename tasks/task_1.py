@@ -3,7 +3,7 @@ from subprocess import Popen, PIPE
 import socket
 
 
-def host_ping(list_address):
+def host_ping(list_address, if_print=True):
     """
     В функции с помощью утилиты ping будет проверяться доступность сетевых узлов.
     Аргументом функции является список, в котором каждый сетевой узел должен быть представлен
@@ -27,6 +27,7 @@ def host_ping(list_address):
             results['Недоступные узлы'] += [str(address)]
             res_string = f'{address} недоступен'
         print(res_string)
+    return results
 
 
 if __name__ == '__main__':
