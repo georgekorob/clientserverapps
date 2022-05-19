@@ -3,8 +3,8 @@ import argparse
 import select
 import socket
 import sys
-import json
-import time
+from common.descriptors import Port, Host
+from common.metaclasses import ServerVerifier
 from common.variables import ACTION, ACCOUNT_NAME, RESPONSE, MAX_CONNECTIONS, PRESENCE, TIME, USER, ERROR, DEFAULT_PORT, \
     RESPONSE_200, RESPONSE_400, MESSAGE, MESSAGE_TEXT, SENDER, DESTINATION, EXIT
 from common.utils import get_message, send_message
@@ -15,39 +15,32 @@ from decorators import Log
 SERVER_LOGGER = logging.getLogger('server_logger')
 
 
-class Server:
-    def __init__(self):
+@Log()
+def arg_parser():
+    """Парсер аргументов коммандной строки"""
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-a', default='', nargs='?')
+    parser.add_argument('-p', default=DEFAULT_PORT, type=int, nargs='?')
+    namespace = parser.parse_args(sys.argv[1:])
+    return namespace.a, namespace.p
+
+
+class Server(metaclass=ServerVerifier):
+    port = Port()
+    address = Host()
+
+    def __init__(self, listen_address, listen_port):
         # Инициализация сокета
         SERVER_LOGGER.debug(f'Настройка сервера.')
-        address, port = self.create_arg_parser()
-
-        SERVER_LOGGER.info(f'Порт для подключений: {port}, '
-                           f'адрес с которого принимаются подключения: {address}. '
+        self.address, self.port = listen_address, listen_port
+        SERVER_LOGGER.info(f'Порт для подключений: {self.port}, '
+                           f'адрес с которого принимаются подключения: {self.address}. '
                            f'Если адрес не указан, принимаются соединения с любых адресов.')
-
-        self.transport = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.transport.bind((address, port))
-        self.transport.settimeout(0.5)
         # список клиентов и очередь сообщений
         self.clients = []
         self.messages = []
         # Словарь, содержащий имена пользователей и соответствующие им сокеты
         self.names = dict()
-
-    @staticmethod
-    def create_arg_parser():
-        """Парсер аргументов коммандной строки"""
-        parser = argparse.ArgumentParser()
-        parser.add_argument('-a', default='', nargs='?')
-        parser.add_argument('-p', default=DEFAULT_PORT, type=int, nargs='?')
-        namespace = parser.parse_args(sys.argv[1:])
-        address, port = namespace.a, namespace.p
-        # Валидация порта
-        if 1024 > port > 65535:
-            SERVER_LOGGER.critical(f'Указан неподходящий порт: {port}. '
-                                   f'Допустимые адреса с 1024 до 65535.')
-            sys.exit(1)
-        return address, port
 
     @Log()
     def process_client_message(self, message, client):
@@ -76,7 +69,7 @@ class Server:
                     client.close()
                     return
             elif message[ACTION] == MESSAGE and \
-                all([w in message for w in [DESTINATION, SENDER, MESSAGE_TEXT]]):
+                    all([w in message for w in [DESTINATION, SENDER, MESSAGE_TEXT]]):
                 # Если клиент хочет отправить сообщение
                 self.messages.append(message)
                 return
@@ -118,11 +111,14 @@ class Server:
     def start(self):
         """Запуск сервера."""
         SERVER_LOGGER.debug(f'Запуск сервера.')
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.bind((self.address, self.port))
+        self.sock.settimeout(0.5)
         # Слушаем порт
-        self.transport.listen(MAX_CONNECTIONS)
+        self.sock.listen(MAX_CONNECTIONS)
         while True:
             try:
-                client, client_address = self.transport.accept()
+                client, client_address = self.sock.accept()
             except OSError:
                 pass
             else:
@@ -162,6 +158,11 @@ class Server:
             self.messages.clear()
 
 
-if __name__ == '__main__':
-    server = Server()
+def main():
+    listen_address, listen_port = arg_parser()
+    server = Server(listen_address, listen_port)
     server.start()
+
+
+if __name__ == '__main__':
+    main()
