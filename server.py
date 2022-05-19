@@ -3,7 +3,7 @@ import argparse
 import select
 import socket
 import sys
-from common.descrptrs import Port, Address
+from common.descriptors import Port, Host
 from common.metaclasses import ServerVerifier
 from common.variables import ACTION, ACCOUNT_NAME, RESPONSE, MAX_CONNECTIONS, PRESENCE, TIME, USER, ERROR, DEFAULT_PORT, \
     RESPONSE_200, RESPONSE_400, MESSAGE, MESSAGE_TEXT, SENDER, DESTINATION, EXIT
@@ -27,14 +27,14 @@ def arg_parser():
 
 class Server(metaclass=ServerVerifier):
     port = Port()
-    address = Address()
+    address = Host()
 
     def __init__(self, listen_address, listen_port):
         # Инициализация сокета
         SERVER_LOGGER.debug(f'Настройка сервера.')
-        address, port = listen_address, listen_port
-        SERVER_LOGGER.info(f'Порт для подключений: {port}, '
-                           f'адрес с которого принимаются подключения: {address}. '
+        self.address, self.port = listen_address, listen_port
+        SERVER_LOGGER.info(f'Порт для подключений: {self.port}, '
+                           f'адрес с которого принимаются подключения: {self.address}. '
                            f'Если адрес не указан, принимаются соединения с любых адресов.')
         # список клиентов и очередь сообщений
         self.clients = []

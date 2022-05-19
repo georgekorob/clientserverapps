@@ -54,9 +54,9 @@ class ClientVerifier(type):
                         if i.argval not in methods:
                             methods.append(i.argval)
         # Если обнаружено использование недопустимого метода accept, listen, socket бросаем исключение:
-        for command in ('accept', 'listen', 'socket'):
+        for command in ('accept', 'listen'):  # , 'socket'
             if command in methods:
-                raise TypeError('В классе обнаружено использование запрещённого метода')
+                raise TypeError(f'В классе обнаружено использование запрещённого метода {command}')
         # Вызов get_message или send_message из utils считаем корректным использованием сокетов
         if 'get_message' in methods or 'send_message' in methods:
             pass

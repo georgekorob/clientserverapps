@@ -23,15 +23,19 @@ class Port:
             exit(1)
 
 
-class Address:
+class Host:
     """Дескриптор для описания адреса"""
 
     def __set_name__(self, owner, name):
         self.name = name
 
     def __set__(self, instance, value):
+        if value == '':
+            instance.__dict__[self.name] = value
+            return
         try:
-            instance.__dict__[self.name] = ip_address(value)
+            ip_address(value)
+            instance.__dict__[self.name] = value
         except Exception as e:
             logger.critical(
                 f'Попытка запуска сервера с указанием неподходящего адреса {value}.')

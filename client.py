@@ -5,7 +5,7 @@ import json
 import socket
 import threading
 import time
-from common.descrptrs import Port, Address
+from common.descriptors import Port, Host
 from common.metaclasses import ClientVerifier
 from common.variables import ACTION, PRESENCE, TIME, USER, ACCOUNT_NAME, RESPONSE, ERROR, DEFAULT_IP_ADDRESS, \
     DEFAULT_PORT, SENDER, MESSAGE_TEXT, MESSAGE, EXIT, DESTINATION
@@ -20,7 +20,7 @@ CLIENT_LOGGER = logging.getLogger('client_logger')
 
 class Client(metaclass=ClientVerifier):
     port = Port()
-    address = Address()
+    address = Host()
 
     def __init__(self):
         # Инициализация сокета
