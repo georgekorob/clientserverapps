@@ -16,7 +16,7 @@ class ServerVerifier(type):
             else:
                 # Если функция разбираем код, получая используемые методы и атрибуты.
                 for i in ret:
-                    print(i)
+                    # print(i)
                     # opname - имя для операции
                     # argval - название функции
                     if i.opname == 'LOAD_GLOBAL':
@@ -27,7 +27,7 @@ class ServerVerifier(type):
                         if i.argval not in attrs:
                             # заполняем список атрибутами, использующимися в функциях класса
                             attrs.append(i.argval)
-        print(methods)
+        # print(methods)
         # Если обнаружено использование недопустимого метода connect, бросаем исключение:
         if 'connect' in methods:
             raise TypeError('Использование метода connect недопустимо в серверном классе')
