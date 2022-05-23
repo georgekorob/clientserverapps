@@ -4,10 +4,9 @@ import subprocess
 import os
 import time
 
-env = os.environ.copy()
-env['PATH'] = '../venvs/clientservervenv/Scripts'
+# env = os.environ.copy()
 address = '127.0.0.1'
-port = '8888'
+port = '7777'
 
 PROCESS = []
 
@@ -18,13 +17,11 @@ while True:
     if ACTION == 'q':
         break
     elif ACTION == 's':
-        PROCESS.append(subprocess.Popen(['python', 'server.py', '-a', address, '-p', port],
-                                        creationflags=subprocess.CREATE_NEW_CONSOLE,
-                                        env=env))
-        for i in range(3):
-            PROCESS.append(subprocess.Popen(['python', 'client.py', address, port, '-n', f'client{i+1}'],
-                                            creationflags=subprocess.CREATE_NEW_CONSOLE,
-                                            env=env))
+        PROCESS.append(subprocess.Popen(['../clientserverappsvenv/Scripts/python.exe', 'server.py', '-a', address, '-p', port],
+                                        creationflags=subprocess.CREATE_NEW_CONSOLE))
+        for i in range(2):
+            PROCESS.append(subprocess.Popen(['../clientserverappsvenv/Scripts/python.exe', 'client.py', address, port, '-n', f'client{i+1}'],
+                                            creationflags=subprocess.CREATE_NEW_CONSOLE))
     elif ACTION == 'x':
         while PROCESS:
             VICTIM = PROCESS.pop()
