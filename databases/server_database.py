@@ -5,18 +5,21 @@ import datetime
 
 
 class ServerStorage:
-    """Класс - серверная база данных:"""
+    """Серверная база данных:"""
+
     class AllUsers:
-        """Класс - отображение таблицы всех пользователей
+        """Отображение таблицы всех пользователей
         Экземпляр этого класса = запись в таблице AllUsers"""
+
         def __init__(self, username):
             self.name = username
             self.last_login = datetime.datetime.now()
             self.id = None
 
     class ActiveUsers:
-        """Класс - отображение таблицы активных пользователей:
+        """Отображение таблицы активных пользователей:
         Экземпляр этого класса = запись в таблице ActiveUsers"""
+
         def __init__(self, user_id, ip_address, port, login_time):
             self.user = user_id
             self.ip_address = ip_address
@@ -25,8 +28,9 @@ class ServerStorage:
             self.id = None
 
     class LoginHistory:
-        """Класс - отображение таблицы истории входов
+        """Отображение таблицы истории входов
         Экземпляр этого класса = запись в таблице LoginHistory"""
+
         def __init__(self, name, date, ip, port):
             self.id = None
             self.name = name
@@ -35,7 +39,8 @@ class ServerStorage:
             self.port = port
 
     class UsersContacts:
-        """Класс - отображение таблицы контактов пользователей"""
+        """Отображение таблицы контактов пользователей"""
+
         def __init__(self, user, contact):
             self.id = None
             self.user = user  # Владелец
@@ -203,6 +208,17 @@ class ServerStorage:
             self.UsersContacts.contact == contact.id
         ).delete())
         self.session.commit()
+
+    def get_contacts(self, username):
+        """Возвращает список контактов пользователя."""
+        # Запрашивааем указанного пользователя
+        user = self.session.query(self.AllUsers).filter_by(name=username).one()
+        # Запрашиваем его список контактов
+        query = self.session.query(self.UsersContacts, self.AllUsers.name). \
+            filter_by(user=user.id). \
+            join(self.AllUsers, self.UsersContacts.contact == self.AllUsers.id)
+        # выбираем только имена пользователей и возвращаем их.
+        return [contact[1] for contact in query.all()]
 
 
 if __name__ == '__main__':
