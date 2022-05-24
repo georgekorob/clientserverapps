@@ -34,8 +34,8 @@ class Server(threading.Thread, metaclass=ServerVerifier):
         logger.debug(f'Настройка сервера.')
         self.address, self.port = listen_address, listen_port
         logger.info(f'Порт для подключений: {self.port}, '
-                           f'адрес с которого принимаются подключения: {self.address}. '
-                           f'Если адрес не указан, принимаются соединения с любых адресов.')
+                    f'адрес с которого принимаются подключения: {self.address}. '
+                    f'Если адрес не указан, принимаются соединения с любых адресов.')
         # База данных сервера
         self.database = database
         # список клиентов и очередь сообщений
@@ -55,37 +55,61 @@ class Server(threading.Thread, metaclass=ServerVerifier):
         """
         logger.debug(f'Сообщение от клиента : {message}')
         if all([w in message for w in [ACTION, TIME]]):
-            if message[ACTION] == PRESENCE and \
-                    USER in message:
-                # Если клиент хочет зарегистрироватся
-                if message[USER][ACCOUNT_NAME] not in self.names.keys():
-                    # Если клиента с таким именем ещё не было
-                    self.names[message[USER][ACCOUNT_NAME]] = client
-                    client_ip, client_port = client.getpeername()
-                    self.database.user_login(message[USER][ACCOUNT_NAME], client_ip, client_port)
-                    send_message(client, RESPONSE_200)  # сообщение о присутствии
+            if USER in message:
+                if message[ACTION] == PRESENCE:
+                    # Если клиент хочет зарегистрироватся
+                    if message[USER] not in self.names.keys():
+                        # Если клиента с таким именем ещё не было
+                        self.names[message[USER]] = client
+                        client_ip, client_port = client.getpeername()
+                        self.database.user_login(message[USER], client_ip, client_port)
+                        send_message(client, RESPONSE_200)  # сообщение о присутствии
+                        return
+                    else:
+                        # Если клиент с таким именем уже зарегистрирован
+                        response = RESPONSE_400
+                        response[ERROR] = 'Имя пользователя уже занято.'
+                        send_message(client, response)
+                        self.clients.remove(client)
+                        client.close()
+                        return
+                elif message[ACTION] == EXIT:
+                    # Если клиент хочет выйти
+                    client_name = message[USER][ACCOUNT_NAME]
+                    self.database.user_logout(client_name)
+                    self.clients.remove(self.names[client_name])
+                    self.names[client_name].close()
+                    del self.names[client_name]
                     return
-                else:
-                    # Если клиент с таким именем уже зарегистрирован
-                    response = RESPONSE_400
-                    response[ERROR] = 'Имя пользователя уже занято.'
+                elif message[ACTION] == GET_CONTACTS and \
+                        self.names[message[USER]] == client:
+                    response = RESPONSE_202
+                    response[LIST_INFO] = self.database.get_contacts(message[USER])
                     send_message(client, response)
-                    self.clients.remove(client)
-                    client.close()
+                    return
+                elif message[ACTION] == USERS_REQUEST and \
+                        self.names[message[USER]] == client:
+                    response = RESPONSE_202
+                    response[LIST_INFO] = [user[0] for user in self.database.users_list()]
+                    send_message(client, response)
+                    return
+                elif message[ACTION] == ADD_CONTACT and \
+                        ACCOUNT_NAME in message and \
+                        self.names[message[USER]] == client:
+                    self.database.add_contact(message[USER], message[ACCOUNT_NAME])
+                    send_message(client, RESPONSE_200)
+                    return
+                elif message[ACTION] == REMOVE_CONTACT and \
+                        ACCOUNT_NAME in message and \
+                        self.names[message[USER]] == client:
+                    self.database.remove_contact(message[USER], message[ACCOUNT_NAME])
+                    send_message(client, RESPONSE_200)
                     return
             elif message[ACTION] == MESSAGE and \
                     all([w in message for w in [DESTINATION, SENDER, MESSAGE_TEXT]]):
                 # Если клиент хочет отправить сообщение
                 self.messages.append(message)
-                return
-            elif message[ACTION] == EXIT and \
-                    USER in message:
-                # Если клиент хочет выйти
-                client_name = message[USER][ACCOUNT_NAME]
-                self.database.user_logout(client_name)
-                self.clients.remove(self.names[client_name])
-                self.names[client_name].close()
-                del self.names[client_name]
+                self.database.process_message(message[SENDER], message[DESTINATION])
                 return
         response = RESPONSE_400
         response[ERROR] = 'Запрос некорректен.'
@@ -105,14 +129,14 @@ class Server(threading.Thread, metaclass=ServerVerifier):
             if names[message[DESTINATION]] in listen_socks:
                 send_message(names[message[DESTINATION]], message)
                 logger.info(f'Отправлено сообщение '
-                                   f'пользователю {message[DESTINATION]} '
-                                   f'от пользователя {message[SENDER]}.')
+                            f'пользователю {message[DESTINATION]} '
+                            f'от пользователя {message[SENDER]}.')
             else:
                 raise ConnectionError
         else:
             logger.error(f'Пользователь {message[DESTINATION]} '
-                                f'не зарегистрирован на сервере, '
-                                f'отправка сообщения невозможна.')
+                         f'не зарегистрирован на сервере, '
+                         f'отправка сообщения невозможна.')
 
     def run(self):
         """Запуск сервера."""
@@ -149,7 +173,7 @@ class Server(threading.Thread, metaclass=ServerVerifier):
                                                     client_with_message)
                     except Exception:
                         logger.info(f'Клиент {client_with_message.getpeername()} '
-                                           f'отключился от сервера.')
+                                    f'отключился от сервера.')
                         self.clients.remove(client_with_message)
 
             # Обрабатываем каждое сообщение
@@ -158,7 +182,7 @@ class Server(threading.Thread, metaclass=ServerVerifier):
                     self.process_message(mes, self.names, send_data_lst)
                 except Exception:
                     logger.info(f'Связь с клиентом с именем {mes[DESTINATION]} '
-                                       f'была потеряна')
+                                f'была потеряна')
                     self.clients.remove(self.names[mes[DESTINATION]])
                     del self.names[mes[DESTINATION]]
             self.messages.clear()
