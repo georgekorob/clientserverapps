@@ -1,39 +1,68 @@
-2022-05-23 16:11:29,026 DEBUG client.py Настройка клиента.
-2022-05-23 16:11:29,028 INFO client.py Настроен клиент с парамертами: адрес сервера 127.0.0.1, порт 7777, имя пользователя: client1
-2022-05-23 16:11:29,034 DEBUG client.py Настройка клиента.
-2022-05-23 16:11:29,035 INFO client.py Настроен клиент с парамертами: адрес сервера 127.0.0.1, порт 7777, имя пользователя: client2
-2022-05-23 16:11:29,567 DEBUG client.py Сформировано presence сообщение для пользователя client1
-2022-05-23 16:11:29,574 DEBUG client.py Сформировано presence сообщение для пользователя client2
-2022-05-23 16:11:29,602 DEBUG client.py 2022-05-23 16:11:29 Функция create_sys_message() c параметрами (<__main__.Client object at 0x000001FEBF228550>, 'presence'), {} вызвана из модуля __main__ функцией start.
-2022-05-23 16:11:29,603 DEBUG client.py 2022-05-23 16:11:29 Функция send_message() c параметрами (<socket.socket fd=424, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 63086), raddr=('127.0.0.1', 7777)>, {'action': 'presence', 'time': 1653311489.5676434, 'user': {'account_name': 'client1'}}), {} вызвана из модуля common.utils функцией start.
-2022-05-23 16:11:29,610 DEBUG client.py 2022-05-23 16:11:29 Функция create_sys_message() c параметрами (<__main__.Client object at 0x0000011FF9C78550>, 'presence'), {} вызвана из модуля __main__ функцией start.
-2022-05-23 16:11:29,611 DEBUG client.py 2022-05-23 16:11:29 Функция send_message() c параметрами (<socket.socket fd=600, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 63087), raddr=('127.0.0.1', 7777)>, {'action': 'presence', 'time': 1653311489.5746446, 'user': {'account_name': 'client2'}}), {} вызвана из модуля common.utils функцией start.
-2022-05-23 16:11:30,124 DEBUG client.py 2022-05-23 16:11:30 Функция get_message() c параметрами (<socket.socket fd=424, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 63086), raddr=('127.0.0.1', 7777)>,), {} вызвана из модуля common.utils функцией start.
-2022-05-23 16:11:30,124 DEBUG client.py Сообщение от сервера: {'response': 200}
-2022-05-23 16:11:30,125 DEBUG client.py 2022-05-23 16:11:30 Функция process_ans() c параметрами ({'response': 200},), {} вызвана из модуля __main__ функцией start.
-2022-05-23 16:11:30,125 INFO client.py Принят ответ от сервера: 200 : OK
-2022-05-23 16:11:30,126 DEBUG client.py Запущены процессы
-2022-05-23 16:11:30,226 DEBUG client.py 2022-05-23 16:11:30 Функция get_message() c параметрами (<socket.socket fd=600, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 63087), raddr=('127.0.0.1', 7777)>,), {} вызвана из модуля common.utils функцией start.
-2022-05-23 16:11:30,226 DEBUG client.py Сообщение от сервера: {'response': 200}
-2022-05-23 16:11:30,229 DEBUG client.py 2022-05-23 16:11:30 Функция process_ans() c параметрами ({'response': 200},), {} вызвана из модуля __main__ функцией start.
-2022-05-23 16:11:30,229 INFO client.py Принят ответ от сервера: 200 : OK
-2022-05-23 16:11:30,232 DEBUG client.py Запущены процессы
-2022-05-23 16:11:48,841 DEBUG client.py Сформирован словарь сообщения: {'action': 'message', 'from': 'client1', 'to': 'client2', 'time': 1653311508.8419433, 'message_text': 'hello'}
-2022-05-23 16:11:48,844 DEBUG client.py 2022-05-23 16:11:48 Функция send_message() c параметрами (<socket.socket fd=424, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 63086), raddr=('127.0.0.1', 7777)>, {'action': 'message', 'from': 'client1', 'to': 'client2', 'time': 1653311508.8419433, 'message_text': 'hello'}), {} вызвана из модуля common.utils функцией create_message.
-2022-05-23 16:11:48,844 INFO client.py Отправлено сообщение для пользователя client2
-2022-05-23 16:11:48,845 DEBUG client.py 2022-05-23 16:11:48 Функция create_message() c параметрами (<__main__.Client object at 0x000001FEBF228550>,), {} вызвана из модуля __main__ функцией message_to_server.
-2022-05-23 16:11:49,264 DEBUG client.py 2022-05-23 16:11:49 Функция get_message() c параметрами (<socket.socket fd=600, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 63087), raddr=('127.0.0.1', 7777)>,), {} вызвана из модуля common.utils функцией message_from_server.
-2022-05-23 16:11:49,266 INFO client.py 
+2022-05-24 14:33:00,379 DEBUG client.py Настройка клиента.
+2022-05-24 14:33:00,380 INFO client.py Настроен клиент с парамертами: адрес сервера 127.0.0.1, порт 7777, имя пользователя: client1
+2022-05-24 14:33:00,388 DEBUG client.py Настройка клиента.
+2022-05-24 14:33:00,388 INFO client.py Настроен клиент с парамертами: адрес сервера 127.0.0.1, порт 7777, имя пользователя: client2
+2022-05-24 14:33:00,917 DEBUG client.py Сформировано presence сообщение для пользователя client1
+2022-05-24 14:33:00,931 DEBUG client.py Сформировано presence сообщение для пользователя client2
+2022-05-24 14:33:01,003 DEBUG client.py 2022-05-24 14:33:00 Функция create_sys_message() c параметрами (<__main__.Client object at 0x0000018527C4F1C0>, 'presence'), {} вызвана из модуля __main__ функцией start.
+2022-05-24 14:33:01,004 DEBUG client.py 2022-05-24 14:33:01 Функция send_message() c параметрами (<socket.socket fd=544, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51727), raddr=('127.0.0.1', 7777)>, {'action': 'presence', 'time': 1653391980.9175372, 'user': 'client1'}), {} вызвана из модуля common.utils функцией start.
+2022-05-24 14:33:01,025 DEBUG client.py 2022-05-24 14:33:00 Функция create_sys_message() c параметрами (<__main__.Client object at 0x000002AEF550F1C0>, 'presence'), {} вызвана из модуля __main__ функцией start.
+2022-05-24 14:33:01,026 DEBUG client.py 2022-05-24 14:33:01 Функция send_message() c параметрами (<socket.socket fd=584, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51728), raddr=('127.0.0.1', 7777)>, {'action': 'presence', 'time': 1653391980.9315202, 'user': 'client2'}), {} вызвана из модуля common.utils функцией start.
+2022-05-24 14:33:01,495 DEBUG client.py 2022-05-24 14:33:01 Функция get_message() c параметрами (<socket.socket fd=544, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51727), raddr=('127.0.0.1', 7777)>,), {} вызвана из модуля common.utils функцией start.
+2022-05-24 14:33:01,495 DEBUG client.py Сообщение от сервера: {'response': 200}
+2022-05-24 14:33:01,497 DEBUG client.py 2022-05-24 14:33:01 Функция process_ans() c параметрами ({'response': 200},), {} вызвана из модуля __main__ функцией start.
+2022-05-24 14:33:01,497 INFO client.py Принят ответ от сервера: 200 : OK
+2022-05-24 14:33:01,681 DEBUG client.py 2022-05-24 14:33:01 Функция get_message() c параметрами (<socket.socket fd=584, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51728), raddr=('127.0.0.1', 7777)>,), {} вызвана из модуля common.utils функцией start.
+2022-05-24 14:33:01,681 DEBUG client.py Сообщение от сервера: {'response': 200}
+2022-05-24 14:33:01,684 DEBUG client.py 2022-05-24 14:33:01 Функция process_ans() c параметрами ({'response': 200},), {} вызвана из модуля __main__ функцией start.
+2022-05-24 14:33:01,684 INFO client.py Принят ответ от сервера: 200 : OK
+2022-05-24 14:33:01,766 DEBUG client.py Запрос списка известных пользователей client1
+2022-05-24 14:33:01,766 DEBUG client.py Сформировано get_users сообщение для пользователя client1
+2022-05-24 14:33:01,773 DEBUG client.py 2022-05-24 14:33:01 Функция create_sys_message() c параметрами (<__main__.Client object at 0x0000018527C4F1C0>, 'get_users'), {} вызвана из модуля __main__ функцией user_list.
+2022-05-24 14:33:01,780 DEBUG client.py 2022-05-24 14:33:01 Функция send_message() c параметрами (<socket.socket fd=544, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51727), raddr=('127.0.0.1', 7777)>, {'action': 'get_users', 'time': 1653391981.7666845, 'user': 'client1'}), {} вызвана из модуля common.utils функцией user_list.
+2022-05-24 14:33:01,926 DEBUG client.py Запрос списка известных пользователей client2
+2022-05-24 14:33:01,927 DEBUG client.py Сформировано get_users сообщение для пользователя client2
+2022-05-24 14:33:01,934 DEBUG client.py 2022-05-24 14:33:01 Функция create_sys_message() c параметрами (<__main__.Client object at 0x000002AEF550F1C0>, 'get_users'), {} вызвана из модуля __main__ функцией user_list.
+2022-05-24 14:33:01,941 DEBUG client.py 2022-05-24 14:33:01 Функция send_message() c параметрами (<socket.socket fd=584, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51728), raddr=('127.0.0.1', 7777)>, {'action': 'get_users', 'time': 1653391981.9274933, 'user': 'client2'}), {} вызвана из модуля common.utils функцией user_list.
+2022-05-24 14:33:02,198 DEBUG client.py 2022-05-24 14:33:02 Функция get_message() c параметрами (<socket.socket fd=544, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51727), raddr=('127.0.0.1', 7777)>,), {} вызвана из модуля common.utils функцией user_list.
+2022-05-24 14:33:02,202 DEBUG client.py 2022-05-24 14:33:02 Функция user_list() c параметрами (<__main__.Client object at 0x0000018527C4F1C0>,), {} вызвана из модуля __main__ функцией database_load.
+2022-05-24 14:33:02,211 DEBUG client.py 2022-05-24 14:33:02 Функция get_message() c параметрами (<socket.socket fd=584, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51728), raddr=('127.0.0.1', 7777)>,), {} вызвана из модуля common.utils функцией user_list.
+2022-05-24 14:33:02,215 DEBUG client.py 2022-05-24 14:33:02 Функция user_list() c параметрами (<__main__.Client object at 0x000002AEF550F1C0>,), {} вызвана из модуля __main__ функцией database_load.
+2022-05-24 14:33:02,218 DEBUG client.py Запрос контакт листа для пользователся client1
+2022-05-24 14:33:02,219 DEBUG client.py Сформировано get_contacts сообщение для пользователя client1
+2022-05-24 14:33:02,223 DEBUG client.py 2022-05-24 14:33:02 Функция create_sys_message() c параметрами (<__main__.Client object at 0x0000018527C4F1C0>, 'get_contacts'), {} вызвана из модуля __main__ функцией contacts_list.
+2022-05-24 14:33:02,227 DEBUG client.py 2022-05-24 14:33:02 Функция send_message() c параметрами (<socket.socket fd=544, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51727), raddr=('127.0.0.1', 7777)>, {'action': 'get_contacts', 'time': 1653391982.2191973, 'user': 'client1'}), {} вызвана из модуля common.utils функцией contacts_list.
+2022-05-24 14:33:02,230 DEBUG client.py Запрос контакт листа для пользователся client2
+2022-05-24 14:33:02,230 DEBUG client.py Сформировано get_contacts сообщение для пользователя client2
+2022-05-24 14:33:02,235 DEBUG client.py 2022-05-24 14:33:02 Функция create_sys_message() c параметрами (<__main__.Client object at 0x000002AEF550F1C0>, 'get_contacts'), {} вызвана из модуля __main__ функцией contacts_list.
+2022-05-24 14:33:02,239 DEBUG client.py 2022-05-24 14:33:02 Функция send_message() c параметрами (<socket.socket fd=584, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51728), raddr=('127.0.0.1', 7777)>, {'action': 'get_contacts', 'time': 1653391982.231185, 'user': 'client2'}), {} вызвана из модуля common.utils функцией contacts_list.
+2022-05-24 14:33:02,728 DEBUG client.py 2022-05-24 14:33:02 Функция get_message() c параметрами (<socket.socket fd=544, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51727), raddr=('127.0.0.1', 7777)>,), {} вызвана из модуля common.utils функцией contacts_list.
+2022-05-24 14:33:02,728 DEBUG client.py Получен ответ {'response': 202, 'data_list': []}
+2022-05-24 14:33:02,732 DEBUG client.py 2022-05-24 14:33:02 Функция contacts_list() c параметрами (<__main__.Client object at 0x0000018527C4F1C0>,), {} вызвана из модуля __main__ функцией database_load.
+2022-05-24 14:33:02,734 DEBUG client.py Запущены процессы
+2022-05-24 14:33:02,744 DEBUG client.py 2022-05-24 14:33:02 Функция get_message() c параметрами (<socket.socket fd=584, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51728), raddr=('127.0.0.1', 7777)>,), {} вызвана из модуля common.utils функцией contacts_list.
+2022-05-24 14:33:02,744 DEBUG client.py Получен ответ {'response': 202, 'data_list': []}
+2022-05-24 14:33:02,748 DEBUG client.py 2022-05-24 14:33:02 Функция contacts_list() c параметрами (<__main__.Client object at 0x000002AEF550F1C0>,), {} вызвана из модуля __main__ функцией database_load.
+2022-05-24 14:33:02,750 DEBUG client.py Запущены процессы
+2022-05-24 14:33:11,714 DEBUG client.py Сформирован словарь сообщения: {'action': 'message', 'from': 'client1', 'to': 'client2', 'time': 1653391991.7144806, 'message_text': 'hello'}
+2022-05-24 14:33:11,726 DEBUG client.py 2022-05-24 14:33:11 Функция send_message() c параметрами (<socket.socket fd=544, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51727), raddr=('127.0.0.1', 7777)>, {'action': 'message', 'from': 'client1', 'to': 'client2', 'time': 1653391991.7144806, 'message_text': 'hello'}), {} вызвана из модуля common.utils функцией create_message.
+2022-05-24 14:33:11,726 INFO client.py Отправлено сообщение для пользователя client2
+2022-05-24 14:33:11,728 DEBUG client.py 2022-05-24 14:33:11 Функция create_message() c параметрами (<__main__.Client object at 0x0000018527C4F1C0>,), {} вызвана из модуля __main__ функцией message_to_server.
+2022-05-24 14:33:11,760 DEBUG client.py 2022-05-24 14:33:11 Функция get_message() c параметрами (<socket.socket fd=584, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51728), raddr=('127.0.0.1', 7777)>,), {} вызвана из модуля common.utils функцией message_from_server.
+2022-05-24 14:33:11,770 INFO client.py 
 Получено сообщение от пользователя client1:
 hello
-2022-05-23 16:12:01,153 DEBUG client.py Сформирован словарь сообщения: {'action': 'message', 'from': 'client2', 'to': 'client2', 'time': 1653311521.1533265, 'message_text': 'ok'}
-2022-05-23 16:12:01,156 DEBUG client.py 2022-05-23 16:12:01 Функция send_message() c параметрами (<socket.socket fd=600, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 63087), raddr=('127.0.0.1', 7777)>, {'action': 'message', 'from': 'client2', 'to': 'client2', 'time': 1653311521.1533265, 'message_text': 'ok'}), {} вызвана из модуля common.utils функцией create_message.
-2022-05-23 16:12:01,156 INFO client.py Отправлено сообщение для пользователя client2
-2022-05-23 16:12:01,158 DEBUG client.py 2022-05-23 16:12:01 Функция create_message() c параметрами (<__main__.Client object at 0x0000011FF9C78550>,), {} вызвана из модуля __main__ функцией message_to_server.
-2022-05-23 16:12:01,298 DEBUG client.py 2022-05-23 16:12:01 Функция get_message() c параметрами (<socket.socket fd=600, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 63087), raddr=('127.0.0.1', 7777)>,), {} вызвана из модуля common.utils функцией message_from_server.
-2022-05-23 16:12:01,300 INFO client.py 
-Получено сообщение от пользователя client2:
-ok
-2022-05-23 16:12:23,094 CRITICAL client.py Потеряно соединение с сервером. [WinError 10054] Удаленный хост принудительно разорвал существующее подключение
-2022-05-23 16:12:23,097 DEBUG threading.py 2022-05-23 16:12:23 Функция message_from_server() c параметрами (<__main__.Client object at 0x000001FEBF228550>,), {} вызвана из модуля __main__ функцией run.
-2022-05-23 16:12:23,097 DEBUG threading.py 2022-05-23 16:12:23 Функция message_from_server() c параметрами (<__main__.Client object at 0x0000011FF9C78550>,), {} вызвана из модуля __main__ функцией run.
+2022-05-24 14:33:23,781 DEBUG client.py Создание контакта client1
+2022-05-24 14:33:23,792 DEBUG client.py 2022-05-24 14:33:23 Функция send_message() c параметрами (<socket.socket fd=584, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51728), raddr=('127.0.0.1', 7777)>, {'action': 'add', 'time': 1653392003.7811682, 'user': 'client2', 'account_name': 'client1'}), {} вызвана из модуля common.utils функцией add_contact.
+2022-05-24 14:33:24,319 DEBUG client.py 2022-05-24 14:33:24 Функция get_message() c параметрами (<socket.socket fd=584, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51728), raddr=('127.0.0.1', 7777)>,), {} вызвана из модуля common.utils функцией add_contact.
+2022-05-24 14:33:24,328 DEBUG client.py 2022-05-24 14:33:24 Функция add_contact() c параметрами (<__main__.Client object at 0x000002AEF550F1C0>, 'client1'), {} вызвана из модуля __main__ функцией edit_contacts.
+2022-05-24 14:33:33,790 DEBUG client.py Сформировано exit сообщение для пользователя client2
+2022-05-24 14:33:33,798 DEBUG client.py 2022-05-24 14:33:33 Функция create_sys_message() c параметрами (<__main__.Client object at 0x000002AEF550F1C0>, 'exit'), {} вызвана из модуля __main__ функцией message_to_server.
+2022-05-24 14:33:33,802 DEBUG client.py 2022-05-24 14:33:33 Функция send_message() c параметрами (<socket.socket fd=584, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51728), raddr=('127.0.0.1', 7777)>, {'action': 'exit', 'time': 1653392013.7909281, 'user': 'client2'}), {} вызвана из модуля common.utils функцией message_to_server.
+2022-05-24 14:33:33,804 INFO client.py Завершение работы по команде пользователя.
+2022-05-24 14:33:34,308 DEBUG threading.py 2022-05-24 14:33:34 Функция message_to_server() c параметрами (<__main__.Client object at 0x000002AEF550F1C0>,), {} вызвана из модуля __main__ функцией run.
+2022-05-24 14:33:37,046 DEBUG client.py Сформировано exit сообщение для пользователя client1
+2022-05-24 14:33:37,048 DEBUG client.py 2022-05-24 14:33:37 Функция create_sys_message() c параметрами (<__main__.Client object at 0x0000018527C4F1C0>, 'exit'), {} вызвана из модуля __main__ функцией message_to_server.
+2022-05-24 14:33:37,050 DEBUG client.py 2022-05-24 14:33:37 Функция send_message() c параметрами (<socket.socket fd=544, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 51727), raddr=('127.0.0.1', 7777)>, {'action': 'exit', 'time': 1653392017.0465977, 'user': 'client1'}), {} вызвана из модуля common.utils функцией message_to_server.
+2022-05-24 14:33:37,050 INFO client.py Завершение работы по команде пользователя.
+2022-05-24 14:33:37,557 DEBUG threading.py 2022-05-24 14:33:37 Функция message_to_server() c параметрами (<__main__.Client object at 0x0000018527C4F1C0>,), {} вызвана из модуля __main__ функцией run.
