@@ -100,7 +100,6 @@ class Client(metaclass=ClientVerifier):
         else:
             raise ValueError
 
-    # Функция изменеия контактов
     def edit_contacts(self):
         """Изменение контактов"""
         ans = input('Для удаления введите del, для добавления add: ')

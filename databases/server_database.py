@@ -46,6 +46,15 @@ class ServerStorage:
             self.user = user  # Владелец
             self.contact = contact  # Клиент
 
+    class UsersHistory:
+        """Отображение таблицы истории действий"""
+
+        def __init__(self, user):
+            self.id = None
+            self.user = user
+            self.sent = 0
+            self.accepted = 0
+
     def __init__(self, path):
         # Создаём движок базы данных
         # SERVER_DATABASE - sqlite:///server_base.db3
@@ -90,6 +99,14 @@ class ServerStorage:
                          Column('contact', ForeignKey('Users.id'))
                          )
 
+        # Создаём таблицу истории пользователей
+        users_history_table = Table('History', self.metadata,
+                                    Column('id', Integer, primary_key=True),
+                                    Column('user', ForeignKey('Users.id')),
+                                    Column('sent', Integer),
+                                    Column('accepted', Integer)
+                                    )
+
         # Создаём таблицы
         self.metadata.create_all(self.database_engine)
 
@@ -99,6 +116,7 @@ class ServerStorage:
         mapper(self.ActiveUsers, active_users_table)
         mapper(self.LoginHistory, user_login_history)
         mapper(self.UsersContacts, contacts)
+        mapper(self.UsersHistory, users_history_table)
 
         # Создаём сессию
         self.session = sessionmaker(bind=self.database_engine)()
@@ -152,6 +170,42 @@ class ServerStorage:
         # Применяем изменения
         self.session.commit()
 
+    def process_message(self, sender, recipient):
+        """Фиксирует передачу сообщения и делает соответствующие отметки в БД"""
+        # Получаем ID отправителя и получателя
+        sender = self.session.query(self.AllUsers).filter_by(name=sender).first().id
+        recipient = self.session.query(self.AllUsers).filter_by(name=recipient).first().id
+        # Запрашиваем строки из истории и увеличиваем счётчики
+        sender_row = self.session.query(self.UsersHistory).filter_by(user=sender).first()
+        sender_row.sent += 1
+        recipient_row = self.session.query(self.UsersHistory).filter_by(user=recipient).first()
+        recipient_row.accepted += 1
+        self.session.commit()
+
+    def add_contact(self, user, contact):
+        """Добавляем контакт"""
+        user = self.session.query(self.AllUsers).filter_by(name=user).first()
+        contact = self.session.query(self.AllUsers).filter_by(name=contact).first()
+
+        if not contact or self.session.query(self.UsersContacts).filter_by(
+                user=user.id, contact=contact.id).count():
+            return
+        self.session.add(self.UsersContacts(user.id, contact.id))
+        self.session.commit()
+
+    def remove_contact(self, user, contact):
+        """Удаляем контакт"""
+        user = self.session.query(self.AllUsers).filter_by(name=user).first()
+        contact = self.session.query(self.AllUsers).filter_by(name=contact).first()
+
+        if not contact:
+            return
+        print(self.session.query(self.UsersContacts).filter(
+            self.UsersContacts.user == user.id,
+            self.UsersContacts.contact == contact.id
+        ).delete())
+        self.session.commit()
+
     def users_list(self):
         """Возвращает список известных пользователей со временем последнего входа."""
         query = self.session.query(
@@ -186,30 +240,6 @@ class ServerStorage:
             query = query.filter(self.AllUsers.name == username)
         return query.all()
 
-    def add_contact(self, user, contact):
-        """Добавляем контакт"""
-        user = self.session.query(self.AllUsers).filter_by(name=user).first()
-        contact = self.session.query(self.AllUsers).filter_by(name=contact).first()
-
-        if not contact or self.session.query(self.UsersContacts).filter_by(
-                user=user.id, contact=contact.id).count():
-            return
-        self.session.add(self.UsersContacts(user.id, contact.id))
-        self.session.commit()
-
-    def remove_contact(self, user, contact):
-        """Удаляем контакт"""
-        user = self.session.query(self.AllUsers).filter_by(name=user).first()
-        contact = self.session.query(self.AllUsers).filter_by(name=contact).first()
-
-        if not contact:
-            return
-        print(self.session.query(self.UsersContacts).filter(
-            self.UsersContacts.user == user.id,
-            self.UsersContacts.contact == contact.id
-        ).delete())
-        self.session.commit()
-
     def get_contacts(self, username):
         """Возвращает список контактов пользователя."""
         # Запрашивааем указанного пользователя
@@ -220,6 +250,17 @@ class ServerStorage:
             join(self.AllUsers, self.UsersContacts.contact == self.AllUsers.id)
         # выбираем только имена пользователей и возвращаем их.
         return [contact[1] for contact in query.all()]
+
+    def message_history(self):
+        """Количество переданных и полученных сообщений"""
+        query = self.session.query(
+            self.AllUsers.name,
+            self.AllUsers.last_login,
+            self.UsersHistory.sent,
+            self.UsersHistory.accepted
+        ).join(self.AllUsers)
+        # Возвращаем список кортежей
+        return query.all()
 
 
 if __name__ == '__main__':
