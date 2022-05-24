@@ -4,17 +4,15 @@ import select
 import socket
 import sys
 import threading
-import logging
-import log.server_log_config
 
 from common.descriptors import Port, Host
 from common.metaclasses import ServerVerifier
 from common.variables import *
 from common.utils import *
 from decorators import Log
-from server_database import ServerStorage
+from databases.server_database import ServerStorage
 
-SERVER_LOGGER = logging.getLogger('server_logger')
+logger = logging.getLogger('server_logger')
 
 
 @Log()
@@ -33,9 +31,9 @@ class Server(threading.Thread, metaclass=ServerVerifier):
 
     def __init__(self, listen_address, listen_port, database):
         # Инициализация сокета
-        SERVER_LOGGER.debug(f'Настройка сервера.')
+        logger.debug(f'Настройка сервера.')
         self.address, self.port = listen_address, listen_port
-        SERVER_LOGGER.info(f'Порт для подключений: {self.port}, '
+        logger.info(f'Порт для подключений: {self.port}, '
                            f'адрес с которого принимаются подключения: {self.address}. '
                            f'Если адрес не указан, принимаются соединения с любых адресов.')
         # База данных сервера
@@ -55,7 +53,7 @@ class Server(threading.Thread, metaclass=ServerVerifier):
         :param client:
         :return: Словарь-ответ для клиента
         """
-        SERVER_LOGGER.debug(f'Сообщение от клиента : {message}')
+        logger.debug(f'Сообщение от клиента : {message}')
         if all([w in message for w in [ACTION, TIME]]):
             if message[ACTION] == PRESENCE and \
                     USER in message:
@@ -106,19 +104,19 @@ class Server(threading.Thread, metaclass=ServerVerifier):
         if message[DESTINATION] in names:
             if names[message[DESTINATION]] in listen_socks:
                 send_message(names[message[DESTINATION]], message)
-                SERVER_LOGGER.info(f'Отправлено сообщение '
+                logger.info(f'Отправлено сообщение '
                                    f'пользователю {message[DESTINATION]} '
                                    f'от пользователя {message[SENDER]}.')
             else:
                 raise ConnectionError
         else:
-            SERVER_LOGGER.error(f'Пользователь {message[DESTINATION]} '
+            logger.error(f'Пользователь {message[DESTINATION]} '
                                 f'не зарегистрирован на сервере, '
                                 f'отправка сообщения невозможна.')
 
     def run(self):
         """Запуск сервера."""
-        SERVER_LOGGER.debug(f'Запуск сервера.')
+        logger.debug(f'Запуск сервера.')
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.bind((self.address, self.port))
         self.sock.settimeout(0.5)
@@ -130,7 +128,7 @@ class Server(threading.Thread, metaclass=ServerVerifier):
             except OSError:
                 pass
             else:
-                SERVER_LOGGER.info(f'Установлено соедение с ПК {client_address}')
+                logger.info(f'Установлено соедение с ПК {client_address}')
                 self.clients.append(client)
 
             recv_data_lst, send_data_lst, err_lst = [], [], []
@@ -150,7 +148,7 @@ class Server(threading.Thread, metaclass=ServerVerifier):
                         self.process_client_message(get_message(client_with_message),
                                                     client_with_message)
                     except Exception:
-                        SERVER_LOGGER.info(f'Клиент {client_with_message.getpeername()} '
+                        logger.info(f'Клиент {client_with_message.getpeername()} '
                                            f'отключился от сервера.')
                         self.clients.remove(client_with_message)
 
@@ -159,7 +157,7 @@ class Server(threading.Thread, metaclass=ServerVerifier):
                 try:
                     self.process_message(mes, self.names, send_data_lst)
                 except Exception:
-                    SERVER_LOGGER.info(f'Связь с клиентом с именем {mes[DESTINATION]} '
+                    logger.info(f'Связь с клиентом с именем {mes[DESTINATION]} '
                                        f'была потеряна')
                     self.clients.remove(self.names[mes[DESTINATION]])
                     del self.names[mes[DESTINATION]]

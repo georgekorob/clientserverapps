@@ -15,7 +15,7 @@ import log.client_log_config
 from decorators import Log
 from os import system
 
-CLIENT_LOGGER = logging.getLogger('client_logger')
+logger = logging.getLogger('client_logger')
 
 
 class Client(metaclass=ClientVerifier):
@@ -24,9 +24,9 @@ class Client(metaclass=ClientVerifier):
 
     def __init__(self):
         # Инициализация сокета
-        CLIENT_LOGGER.debug(f'Настройка клиента.')
+        logger.debug(f'Настройка клиента.')
         self.address, self.port, self.client_name = self.arg_parser()
-        CLIENT_LOGGER.info(f'Настроен клиент с парамертами: адрес сервера {self.address}, '
+        logger.info(f'Настроен клиент с парамертами: адрес сервера {self.address}, '
                            f'порт {self.port}, имя пользователя: {self.client_name}')
         self.transport = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         system("title " + self.client_name)
@@ -58,7 +58,7 @@ class Client(metaclass=ClientVerifier):
         Функция генерирует запрос о состоянии клиента.
         :return: Словарь запрос.
         """
-        CLIENT_LOGGER.debug(f'Сформировано {request} сообщение для пользователя {self.client_name}')
+        logger.debug(f'Сформировано {request} сообщение для пользователя {self.client_name}')
         return {
             ACTION: request,
             TIME: time.time(),
@@ -75,7 +75,7 @@ class Client(metaclass=ClientVerifier):
         :param message: Словарь-сообщение от сервера.
         :return: Информационная строка.
         """
-        CLIENT_LOGGER.debug(f'Сообщение от сервера: {message}')
+        logger.debug(f'Сообщение от сервера: {message}')
         if RESPONSE in message:
             if message[RESPONSE] == 200:
                 return '200 : OK'
@@ -100,12 +100,12 @@ class Client(metaclass=ClientVerifier):
             TIME: time.time(),
             MESSAGE_TEXT: message
         }
-        CLIENT_LOGGER.debug(f'Сформирован словарь сообщения: {message_dict}')
+        logger.debug(f'Сформирован словарь сообщения: {message_dict}')
         try:
             send_message(self.transport, message_dict)
-            CLIENT_LOGGER.info(f'Отправлено сообщение для пользователя {to_user}')
+            logger.info(f'Отправлено сообщение для пользователя {to_user}')
         except Exception as e:
-            CLIENT_LOGGER.critical(f'Потеряно соединение с сервером. {e}')
+            logger.critical(f'Потеряно соединение с сервером. {e}')
             sys.exit(1)
 
     @Log()
@@ -120,11 +120,11 @@ class Client(metaclass=ClientVerifier):
                     mes = f'\nПолучено сообщение от пользователя {message[SENDER]}:' \
                           f'\n{message[MESSAGE_TEXT]}'
                     print(mes)
-                    CLIENT_LOGGER.info(mes)
+                    logger.info(mes)
                 else:
-                    CLIENT_LOGGER.error(f'Получено некорректное сообщение с сервера: {message}')
+                    logger.error(f'Получено некорректное сообщение с сервера: {message}')
             except Exception as e:
-                CLIENT_LOGGER.critical(f'Потеряно соединение с сервером. {e}')
+                logger.critical(f'Потеряно соединение с сервером. {e}')
                 break
 
     @Log()
@@ -140,7 +140,7 @@ class Client(metaclass=ClientVerifier):
             elif command == 'exit':
                 send_message(self.transport, self.create_sys_message(EXIT))
                 print('Завершение соединения.')
-                CLIENT_LOGGER.info('Завершение работы по команде пользователя.')
+                logger.info('Завершение работы по команде пользователя.')
                 # Задержка неоходима, чтобы успело уйти сообщение о выходе
                 time.sleep(0.5)
                 break
@@ -153,10 +153,10 @@ class Client(metaclass=ClientVerifier):
             self.transport.connect((self.address, self.port))
             send_message(self.transport, self.create_sys_message(PRESENCE))
             answer = self.process_ans(get_message(self.transport))
-            CLIENT_LOGGER.info(f'Принят ответ от сервера: {answer}')
+            logger.info(f'Принят ответ от сервера: {answer}')
             print(f'Установлено соединение с сервером.')
         except (ValueError, ConnectionRefusedError, json.JSONDecodeError):
-            CLIENT_LOGGER.error('Не удалось декодировать сообщение сервера.')
+            logger.error('Не удалось декодировать сообщение сервера.')
             sys.exit(1)
         else:
             # Если соединение с сервером установлено
@@ -168,7 +168,7 @@ class Client(metaclass=ClientVerifier):
             user_send_message = threading.Thread(target=self.message_to_server)
             user_send_message.daemon = True
             user_send_message.start()
-            CLIENT_LOGGER.debug('Запущены процессы')
+            logger.debug('Запущены процессы')
 
             # завершаем работу, если один из потоков завершен
             while True:
