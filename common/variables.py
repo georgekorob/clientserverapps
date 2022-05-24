@@ -15,7 +15,9 @@ ENCODING = 'utf-8'
 LOGGING_FILE_LEVEL = logging.DEBUG
 LOGGING_STREAM_LEVEL = logging.ERROR
 # База данных для хранения данных сервера:
-SERVER_DATABASE = 'sqlite:///databases/server_base.db3'
+SERVER_DATABASE_PATH = 'sqlite:///databases'
+SERVER_DATABASE_FILE = 'server_base.db3'
+SERVER_DATABASE = SERVER_DATABASE_PATH+'/'+SERVER_DATABASE_FILE
 
 # Прококол JIM основные ключи:
 ACTION = 'action'
