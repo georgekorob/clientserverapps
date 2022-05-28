@@ -1,7 +1,6 @@
 # Константы
 import logging
 
-
 # Порт по умолчанию для сетевого ваимодействия
 DEFAULT_PORT = 7777
 # IP адрес по умолчанию для подключения клиента
@@ -16,7 +15,9 @@ ENCODING = 'utf-8'
 LOGGING_FILE_LEVEL = logging.DEBUG
 LOGGING_STREAM_LEVEL = logging.ERROR
 # База данных для хранения данных сервера:
-SERVER_DATABASE = 'sqlite:///server_base.db3'
+SERVER_DATABASE_PATH = 'sqlite:///databases'
+SERVER_DATABASE_FILE = 'server_base.db3'
+SERVER_DATABASE = SERVER_DATABASE_PATH+'/'+SERVER_DATABASE_FILE
 
 # Прококол JIM основные ключи:
 ACTION = 'action'
@@ -33,10 +34,19 @@ ERROR = 'error'
 MESSAGE = 'message'
 MESSAGE_TEXT = 'message_text'
 EXIT = 'exit'
+GET_CONTACTS = 'get_contacts'
+LIST_INFO = 'data_list'
+REMOVE_CONTACT = 'remove'
+ADD_CONTACT = 'add'
+USERS_REQUEST = 'get_users'
 
 # Словари - ответы:
 RESPONSE_200 = {RESPONSE: 200}
+RESPONSE_202 = {
+    RESPONSE: 202,
+    LIST_INFO: ''
+}
 RESPONSE_400 = {
-            RESPONSE: 400,
-            ERROR: 'Bad Request'
-        }
+    RESPONSE: 400,
+    ERROR: 'Bad Request'
+}

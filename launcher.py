@@ -7,7 +7,8 @@ import time
 # env = os.environ.copy()
 address = '127.0.0.1'
 port = '7777'
-
+# path_python = '../clientserverappsvenv/Scripts/python.exe'
+path_python = '../venvs/clientserverapps/Scripts/python.exe'
 PROCESS = []
 
 while True:
@@ -17,10 +18,10 @@ while True:
     if ACTION == 'q':
         break
     elif ACTION == 's':
-        PROCESS.append(subprocess.Popen(['../clientserverappsvenv/Scripts/python.exe', 'server.py', '-a', address, '-p', port],
+        PROCESS.append(subprocess.Popen([path_python, 'server.py', '-a', address, '-p', port],
                                         creationflags=subprocess.CREATE_NEW_CONSOLE))
         for i in range(2):
-            PROCESS.append(subprocess.Popen(['../clientserverappsvenv/Scripts/python.exe', 'client.py', address, port, '-n', f'client{i+1}'],
+            PROCESS.append(subprocess.Popen([path_python, 'client.py', address, port, '-n', f'client{i+1}'],
                                             creationflags=subprocess.CREATE_NEW_CONSOLE))
     elif ACTION == 'x':
         while PROCESS:
