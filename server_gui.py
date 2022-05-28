@@ -209,7 +209,6 @@ class ConfigWindow(QDialog):
 
 
 if __name__ == '__main__':
-
     app = QApplication(sys.argv)
     ex = MainWindow()
     ex.statusBar().showMessage('Test Statusbar Message')
