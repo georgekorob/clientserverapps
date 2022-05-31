@@ -86,9 +86,7 @@ class ClientTransport(threading.Thread, QObject):
         out = {
             ACTION: PRESENCE,
             TIME: time.time(),
-            USER: {
-                ACCOUNT_NAME: self.username
-            }
+            USER: self.username
         }
         logger.debug(f'Сформировано {PRESENCE} сообщение для пользователя {self.username}')
         return out
@@ -108,12 +106,12 @@ class ClientTransport(threading.Thread, QObject):
                 logger.debug(f'Принят неизвестный код подтверждения {message[RESPONSE]}')
 
         # Если это сообщение от пользователя добавляем в базу, даём сигнал о новом сообщении
-        elif all([w in message for w in [ACTION, SENDER, DESTINATION, MESSAGE_TEXT]]) and \
+        elif all([w in message for w in [ACTION, USER, DESTINATION, MESSAGE_TEXT]]) and \
                 message[ACTION] == MESSAGE and \
                 message[DESTINATION] == self.username:
-            logger.debug(f'Получено сообщение от пользователя {message[SENDER]}:{message[MESSAGE_TEXT]}')
-            self.database.save_message(message[SENDER], 'in', message[MESSAGE_TEXT])
-            self.new_message.emit(message[SENDER])
+            logger.debug(f'Получено сообщение от пользователя {message[USER]}:{message[MESSAGE_TEXT]}')
+            self.database.save_message(message[USER], 'in', message[MESSAGE_TEXT])
+            self.new_message.emit(message[USER])
 
     def contacts_list_update(self):
         """Обновить контакт-лист с сервера."""
@@ -140,7 +138,7 @@ class ClientTransport(threading.Thread, QObject):
         req = {
             ACTION: USERS_REQUEST,
             TIME: time.time(),
-            ACCOUNT_NAME: self.username
+            USER: self.username
         }
         with socket_lock:
             send_message(self.transport, req)
@@ -182,7 +180,7 @@ class ClientTransport(threading.Thread, QObject):
         message = {
             ACTION: EXIT,
             TIME: time.time(),
-            ACCOUNT_NAME: self.username
+            USER: self.username
         }
         with socket_lock:
             try:
@@ -196,7 +194,7 @@ class ClientTransport(threading.Thread, QObject):
         """Отправка сообщения на сервер."""
         message_dict = {
             ACTION: MESSAGE,
-            SENDER: self.username,
+            USER: self.username,
             DESTINATION: to,
             TIME: time.time(),
             MESSAGE_TEXT: message

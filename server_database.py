@@ -57,10 +57,6 @@ class ServerStorage:
 
     def __init__(self, path):
         # Создаём движок базы данных
-        # SERVER_DATABASE - sqlite:///server_base.db3
-        # echo=False - отключаем ведение лога (вывод sql-запросов)
-        # pool_recycle - По умолчанию соединение с БД через 8 часов простоя обрывается.
-        # Чтобы это не случилось нужно добавить опцию pool_recycle = 7200 (переустановка соединения через 2 часа)
         self.database_engine = create_engine(f'sqlite:///{path}', echo=False, pool_recycle=7200,
                                              connect_args={'check_same_thread': False})
 
@@ -80,8 +76,7 @@ class ServerStorage:
                                    Column('user', ForeignKey('Users.id'), unique=True),
                                    Column('ip_address', String),
                                    Column('port', Integer),
-                                   Column('login_time', DateTime)
-                                   )
+                                   Column('login_time', DateTime))
 
         # Создаём таблицу истории входов
         user_login_history = Table('Login_history', self.metadata,
@@ -89,29 +84,25 @@ class ServerStorage:
                                    Column('name', ForeignKey('Users.id')),
                                    Column('date_time', DateTime),
                                    Column('ip', String),
-                                   Column('port', String)
-                                   )
+                                   Column('port', String))
 
         # Создаём таблицу контактов пользователей
         contacts = Table('Contacts', self.metadata,
                          Column('id', Integer, primary_key=True),
                          Column('user', ForeignKey('Users.id')),
-                         Column('contact', ForeignKey('Users.id'))
-                         )
+                         Column('contact', ForeignKey('Users.id')))
 
         # Создаём таблицу истории пользователей
         users_history_table = Table('History', self.metadata,
                                     Column('id', Integer, primary_key=True),
                                     Column('user', ForeignKey('Users.id')),
                                     Column('sent', Integer),
-                                    Column('accepted', Integer)
-                                    )
+                                    Column('accepted', Integer))
 
         # Создаём таблицы
         self.metadata.create_all(self.database_engine)
 
         # Создаём отображения
-        # Связываем класс в ORM с таблицей
         mapper(self.AllUsers, users_table)
         mapper(self.ActiveUsers, active_users_table)
         mapper(self.LoginHistory, user_login_history)
@@ -122,7 +113,6 @@ class ServerStorage:
         self.session = sessionmaker(bind=self.database_engine)()
 
         # Если в таблице активных пользователей есть записи, то их необходимо удалить
-        # Когда устанавливаем соединение, очищаем таблицу активных пользователей
         self.session.query(self.ActiveUsers).delete()
         self.session.commit()
 
@@ -131,26 +121,25 @@ class ServerStorage:
         print(username, ip_address, port)
         # Запрос в таблицу пользователей на наличие там пользователя с таким именем
         rez = self.session.query(self.AllUsers).filter_by(name=username)
-        # print(type(rez))
+
         # Если имя пользователя уже присутствует в таблице, обновляем время последнего входа
         if rez.count():
             user = rez.first()
             user.last_login = datetime.datetime.now()
         # Если нет, то создаздаём нового пользователя
         else:
-            # Создаем экземпляр класса self.AllUsers, через который передаем данные в таблицу
             user = self.AllUsers(username)
             self.session.add(user)
             # Комит здесь нужен, чтобы присвоился ID
             self.session.commit()
+            user_in_history = self.UsersHistory(user.id)
+            self.session.add(user_in_history)
 
         # Теперь можно создать запись в таблицу активных пользователей о факте входа.
-        # Создаем экземпляр класса self.ActiveUsers, через который передаем данные в таблицу
         new_active_user = self.ActiveUsers(user.id, ip_address, port, datetime.datetime.now())
         self.session.add(new_active_user)
 
         # и сохранить в историю входов
-        # Создаем экземпляр класса self.LoginHistory, через который передаем данные в таблицу
         history = self.LoginHistory(user.id, datetime.datetime.now(), ip_address, port)
         self.session.add(history)
 
@@ -164,7 +153,6 @@ class ServerStorage:
         user = self.session.query(self.AllUsers).filter_by(name=username).first()
 
         # Удаляем его из таблицы активных пользователей.
-        # Удаляем запись из таблицы ActiveUsers
         self.session.query(self.ActiveUsers).filter_by(user=user.id).delete()
 
         # Применяем изменения
@@ -200,17 +188,17 @@ class ServerStorage:
 
         if not contact:
             return
-        print(self.session.query(self.UsersContacts).filter(
+        self.session.query(self.UsersContacts).filter(
             self.UsersContacts.user == user.id,
             self.UsersContacts.contact == contact.id
-        ).delete())
+        ).delete()
         self.session.commit()
 
     def users_list(self):
         """Возвращает список известных пользователей со временем последнего входа."""
         query = self.session.query(
             self.AllUsers.name,
-            self.AllUsers.last_login,
+            self.AllUsers.last_login
         )
         # Возвращаем список кортежей
         return query.all()

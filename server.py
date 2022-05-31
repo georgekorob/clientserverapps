@@ -10,9 +10,11 @@ from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from common.descriptors import Port, Host
 from common.metaclasses import ServerVerifier
+import logging
+import log.server_log_config
 from common.variables import *
 from common.utils import *
-from decorators import Log
+from common.decorators import Log
 from server_database import ServerStorage
 from server_gui import MainWindow, gui_create_model, HistoryWindow, create_stat_model, ConfigWindow
 
@@ -31,12 +33,13 @@ def arg_parser(def_port, def_address):
     return namespace.a, namespace.p
 
 
+# Основной класс сервера
 class Server(threading.Thread, metaclass=ServerVerifier):
     port = Port()
     address = Host()
 
     def __init__(self, listen_address, listen_port, database):
-        # Инициализация сокета
+        # Параментры подключения
         logger.debug(f'Настройка сервера.')
         self.address, self.port = listen_address, listen_port
         logger.info(f'Порт для подключений: {self.port}, '
@@ -60,75 +63,88 @@ class Server(threading.Thread, metaclass=ServerVerifier):
         :return: Словарь-ответ для клиента
         """
         global new_connection
-        logger.debug(f'Сообщение от клиента : {message}')
-        if all([w in message for w in [ACTION, TIME]]):
-            if USER in message:
-                if message[ACTION] == PRESENCE:
-                    # Если клиент хочет зарегистрироватся
-                    if message[USER] not in self.names.keys():
-                        # Если клиента с таким именем ещё не было
-                        self.names[message[USER]] = client
-                        client_ip, client_port = client.getpeername()
-                        self.database.user_login(message[USER], client_ip, client_port)
-                        send_message(client, RESPONSE_200)  # сообщение о присутствии
-                        with conflag_lock:
-                            new_connection = True
-                        return
-                    else:
-                        # Если клиент с таким именем уже зарегистрирован
-                        response = RESPONSE_400
-                        response[ERROR] = 'Имя пользователя уже занято.'
-                        send_message(client, response)
-                        self.clients.remove(client)
-                        client.close()
-                        return
-                elif message[ACTION] == EXIT:
-                    # Если клиент хочет выйти
-                    client_name = message[USER][ACCOUNT_NAME]
-                    self.database.user_logout(client_name)
-                    self.clients.remove(self.names[client_name])
-                    self.names[client_name].close()
-                    del self.names[client_name]
+        logger.debug(f'Разбор сообщения от клиента : {message}')
+
+        if all([w in message for w in [ACTION, TIME, USER]]):
+            user = message[USER]
+            # Если это сообщение о присутствии, принимаем и отвечаем
+            if message[ACTION] == PRESENCE:
+                # Пользователь ещё не зарегистрирован
+                if user not in self.names.keys():
+                    self.names[user] = client
+                    client_ip, client_port = client.getpeername()
+                    self.database.user_login(user, client_ip, client_port)
+                    send_message(client, RESPONSE_200)
                     with conflag_lock:
                         new_connection = True
-                    return
-                elif message[ACTION] == GET_CONTACTS and \
-                        self.names[message[USER]] == client:
-                    response = RESPONSE_202
-                    response[LIST_INFO] = self.database.get_contacts(message[USER])
+                else:
+                    # Клиент с таким именем уже зарегистрирован
+                    response = RESPONSE_400
+                    response[ERROR] = 'Имя пользователя уже занято.'
                     send_message(client, response)
-                    return
-                elif message[ACTION] == USERS_REQUEST and \
-                        self.names[message[USER]] == client:
-                    response = RESPONSE_202
-                    response[LIST_INFO] = [user[0] for user in self.database.users_list()]
-                    send_message(client, response)
-                    return
-                elif message[ACTION] == ADD_CONTACT and \
-                        ACCOUNT_NAME in message and \
-                        self.names[message[USER]] == client:
-                    self.database.add_contact(message[USER], message[ACCOUNT_NAME])
-                    send_message(client, RESPONSE_200)
-                    return
-                elif message[ACTION] == REMOVE_CONTACT and \
-                        ACCOUNT_NAME in message and \
-                        self.names[message[USER]] == client:
-                    self.database.remove_contact(message[USER], message[ACCOUNT_NAME])
-                    send_message(client, RESPONSE_200)
-                    return
+                    self.clients.remove(client)
+                    client.close()
+
+            # Запрос контакт-листа
+            elif message[ACTION] == GET_CONTACTS and \
+                    self.names[user] == client:
+                response = RESPONSE_202
+                response[LIST_INFO] = self.database.get_contacts(user)
+                send_message(client, response)
+
+            # Добавление контакта
+            elif message[ACTION] == ADD_CONTACT and \
+                    ACCOUNT_NAME in message and \
+                    self.names[user] == client:
+                self.database.add_contact(user, message[ACCOUNT_NAME])
+                send_message(client, RESPONSE_200)
+
+            # Удаление контакта
+            elif message[ACTION] == REMOVE_CONTACT and \
+                    ACCOUNT_NAME in message and \
+                    self.names[user] == client:
+                self.database.remove_contact(user, message[ACCOUNT_NAME])
+                send_message(client, RESPONSE_200)
+
+            # Logout
+            elif message[ACTION] == EXIT and \
+                    self.names[user] == client:
+                self.database.user_logout(user)
+                logger.info(f'Клиент {user} корректно отключился от сервера.')
+                self.clients.remove(self.names[user])
+                self.names[user].close()
+                del self.names[user]
+                with conflag_lock:
+                    new_connection = True
+
+            # Запрос известных пользователей
+            elif message[ACTION] == USERS_REQUEST and \
+                    self.names[user] == client:
+                response = RESPONSE_202
+                response[LIST_INFO] = [user[0] for user in self.database.users_list()]
+                send_message(client, response)
+
+            # Сообщение
             elif message[ACTION] == MESSAGE and \
-                    all([w in message for w in [DESTINATION, SENDER, MESSAGE_TEXT]]):
-                # Если клиент хочет отправить сообщение
-                self.messages.append(message)
-                self.database.process_message(message[SENDER], message[DESTINATION])
-                return
+                    all([w in message for w in [DESTINATION, MESSAGE_TEXT]]) and \
+                    self.names[user] == client:
+                if message[DESTINATION] in self.names:
+                    self.messages.append(message)
+                    self.database.process_message(user, message[DESTINATION])
+                    send_message(client, RESPONSE_200)
+                else:
+                    response = RESPONSE_400
+                    response[ERROR] = 'Пользователь не зарегистрирован на сервере.'
+                    send_message(client, response)
+
+            return
+
         response = RESPONSE_400
         response[ERROR] = 'Запрос некорректен.'
-        send_message(client, response)  # отдаём Bad request
+        send_message(client, response)
 
-    @staticmethod
     @Log()
-    def process_message(message, names, listen_socks):
+    def process_message(self, message, listen_socks):
         """
         Функция адресной отправки сообщения определённому клиенту.
         :param message: Словарь - сообщение
@@ -136,27 +152,28 @@ class Server(threading.Thread, metaclass=ServerVerifier):
         :param listen_socks:
         """
         # отправляем сообщения, ожидающим клиентам
-        if message[DESTINATION] in names:
-            if names[message[DESTINATION]] in listen_socks:
-                send_message(names[message[DESTINATION]], message)
+        if message[DESTINATION] in self.names:
+            if self.names[message[DESTINATION]] in listen_socks:
+                send_message(self.names[message[DESTINATION]], message)
                 logger.info(f'Отправлено сообщение '
                             f'пользователю {message[DESTINATION]} '
-                            f'от пользователя {message[SENDER]}.')
+                            f'от пользователя {message[USER]}.')
+                return
             else:
                 raise ConnectionError
-        else:
-            logger.error(f'Пользователь {message[DESTINATION]} '
+        logger.error(f'Пользователь {message[DESTINATION]} '
                          f'не зарегистрирован на сервере, '
                          f'отправка сообщения невозможна.')
 
     def run(self):
         """Запуск сервера."""
+        global new_connection
         logger.debug(f'Запуск сервера.')
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.bind((self.address, self.port))
         self.sock.settimeout(0.5)
         # Слушаем порт
-        self.sock.listen(MAX_CONNECTIONS)
+        self.sock.listen()
         while True:
             try:
                 client, client_address = self.sock.accept()
@@ -185,27 +202,45 @@ class Server(threading.Thread, metaclass=ServerVerifier):
                     except Exception:
                         logger.info(f'Клиент {client_with_message.getpeername()} '
                                     f'отключился от сервера.')
+                        for name in self.names:
+                            if self.names[name] == client_with_message:
+                                self.database.user_logout(name)
+                                del self.names[name]
+                                break
                         self.clients.remove(client_with_message)
+                        with conflag_lock:
+                            new_connection = True
 
             # Обрабатываем каждое сообщение
             for mes in self.messages:
                 try:
-                    self.process_message(mes, self.names, send_data_lst)
+                    self.process_message(mes, send_data_lst)
                 except Exception:
                     logger.info(f'Связь с клиентом с именем {mes[DESTINATION]} '
                                 f'была потеряна')
                     self.clients.remove(self.names[mes[DESTINATION]])
+                    self.database.user_logout(mes[DESTINATION])
                     del self.names[mes[DESTINATION]]
+                    with conflag_lock:
+                        new_connection = True
             self.messages.clear()
 
 
-def print_help():
-    print('Поддерживаемые комманды:')
-    print('users - список известных пользователей')
-    print('connected - список подключенных пользователей')
-    print('loghist - история входов пользователя')
-    print('exit - завершение работы сервера.')
-    print('help - вывод справки по поддерживаемым командам')
+def config_load():
+    """Загрузка файла конфигурации."""
+    config = configparser.ConfigParser()
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    config.read(f"{dir_path}/{'server.ini'}")
+    # Если конфиг файл загружен правильно, запускаемся, иначе конфиг по умолчанию.
+    if 'SETTINGS' in config:
+        return config
+    else:
+        config.add_section('SETTINGS')
+        config.set('SETTINGS', 'Default_port', str(DEFAULT_PORT))
+        config.set('SETTINGS', 'Listen_Address', '')
+        config.set('SETTINGS', 'Database_path', '')
+        config.set('SETTINGS', 'Database_file', 'server_database.db3')
+        return config
 
 
 def pyqt_graph(config, database):
@@ -232,56 +267,43 @@ def pyqt_graph(config, database):
     def show_statistics():
         """Окно со статистикой клиентов"""
         global stat_window
-        try:
-            stat_window = HistoryWindow()
-            stat_window.history_table.setModel(create_stat_model(database))
-            stat_window.history_table.resizeColumnsToContents()
-            stat_window.history_table.resizeRowsToContents()
-            stat_window.show()
-        except Exception as e:
-            print(e)
+        stat_window = HistoryWindow()
+        stat_window.history_table.setModel(create_stat_model(database))
+        stat_window.history_table.resizeColumnsToContents()
+        stat_window.history_table.resizeRowsToContents()
+        stat_window.show()
 
     def server_config():
         """Окно с настройками сервера"""
         global config_window
         # Создаём окно и заносим в него текущие параметры
-        try:
-            config_window = ConfigWindow()
-            config_window.db_path.insert(config['SETTINGS']['Database_path'])
-            config_window.db_file.insert(config['SETTINGS']['Database_file'])
-            config_window.port.insert(config['SETTINGS']['Default_port'])
-            config_window.ip.insert(config['SETTINGS']['Listen_Address'])
-            config_window.save_btn.clicked.connect(save_server_config)
-        except Exception as e:
-            print(e)
+        config_window = ConfigWindow()
+        config_window.db_path.insert(config['SETTINGS']['Database_path'])
+        config_window.db_file.insert(config['SETTINGS']['Database_file'])
+        config_window.port.insert(config['SETTINGS']['Default_port'])
+        config_window.ip.insert(config['SETTINGS']['Listen_Address'])
+        config_window.save_btn.clicked.connect(save_server_config)
 
     def save_server_config():
         """Сохранение настроек"""
         global config_window
+        message = QMessageBox()
+        config['SETTINGS']['Database_path'] = config_window.db_path.text()
+        config['SETTINGS']['Database_file'] = config_window.db_file.text()
         try:
-            message = QMessageBox()
-            config['SETTINGS']['Database_path'] = config_window.db_path.text()
-            config['SETTINGS']['Database_file'] = config_window.db_file.text()
-            try:
-                port = int(config_window.port.text())
-            except ValueError:
-                message.warning(config_window, 'Ошибка', 'Порт должен быть числом')
+            port = int(config_window.port.text())
+        except ValueError:
+            message.warning(config_window, 'Ошибка', 'Порт должен быть числом')
+        else:
+            config['SETTINGS']['Listen_Address'] = config_window.ip.text()
+            if 1023 < port < 65536:
+                config['SETTINGS']['Default_port'] = str(port)
+                dir_path = os.path.dirname(os.path.realpath(__file__))
+                with open(f"{dir_path}/{'server.ini'}", 'w') as conf:
+                    config.write(conf)
+                    message.information(config_window, 'OK', 'Настройки успешно сохранены!')
             else:
-                config['SETTINGS']['Listen_Address'] = config_window.ip.text()
-                if 1023 < port < 65536:
-                    config['SETTINGS']['Default_port'] = str(port)
-                    print(port)
-                    with open('server.ini', 'w') as conf:
-                        config.write(conf)
-                        message.information(
-                            config_window, 'OK', 'Настройки успешно сохранены!')
-                else:
-                    message.warning(
-                        config_window,
-                        'Ошибка',
-                        'Порт должен быть от 1024 до 65536')
-        except Exception as e:
-            print(e)
+                message.warning(config_window, 'Ошибка', 'Порт должен быть от 1024 до 65536')
 
     # Таймер, обновляющий список клиентов 1 раз в секунду
     timer = QTimer()
@@ -298,44 +320,20 @@ def pyqt_graph(config, database):
 
 
 def main():
-    config = configparser.ConfigParser()
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    config.read(f"{dir_path}/{'server.ini'}")
+    config = config_load()
 
-    # Загрузка параметров командной строки, если нет параметров, то задаём по умоланию.
     listen_address, listen_port = arg_parser(
         config['SETTINGS']['Default_port'],
         config['SETTINGS']['Listen_Address'])
     database = ServerStorage(os.path.join(
-            config['SETTINGS']['Database_path'],
-            config['SETTINGS']['Database_file']))
+        config['SETTINGS']['Database_path'],
+        config['SETTINGS']['Database_file']))
+
     server = Server(listen_address, listen_port, database)
     server.daemon = True
     server.start()
 
     pyqt_graph(config, database)
-
-    # print_help()
-    #
-    # while True:
-    #     command = input('Введите комманду: ')
-    #     if command == 'help':
-    #         print_help()
-    #     elif command == 'exit':
-    #         break
-    #     elif command == 'users':
-    #         for user in sorted(database.users_list()):
-    #             print(f'Пользователь {user[0]}, последний вход: {user[1]}')
-    #     elif command == 'connected':
-    #         for user in sorted(database.active_users_list()):
-    #             print(f'Пользователь {user[0]}, подключен: {user[1]}:{user[2]}, время установки соединения: {user[3]}')
-    #     elif command == 'loghist':
-    #         name = input('Введите имя пользователя для просмотра истории.'
-    #                      'Для вывода всей истории, просто нажмите Enter: ')
-    #         for user in sorted(database.login_history(name)):
-    #             print(f'Пользователь: {user[0]} время входа: {user[1]}. Вход с: {user[2]}:{user[3]}')
-    #     else:
-    #         print('Команда не распознана.')
 
 
 if __name__ == '__main__':

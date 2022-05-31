@@ -45,8 +45,7 @@ class ClientDatabase:
         # Создаём таблицу известных пользователей
         users = Table('known_users', self.metadata,
                       Column('id', Integer, primary_key=True),
-                      Column('username', String)
-                      )
+                      Column('username', String))
 
         # Создаём таблицу истории сообщений
         history = Table('message_history', self.metadata,
@@ -54,14 +53,12 @@ class ClientDatabase:
                         Column('from_user', String),
                         Column('to_user', String),
                         Column('message', Text),
-                        Column('date', DateTime)
-                        )
+                        Column('date', DateTime))
 
         # Создаём таблицу контактов
         contacts = Table('contacts', self.metadata,
                          Column('id', Integer, primary_key=True),
-                         Column('name', String, unique=True)
-                         )
+                         Column('name', String, unique=True))
 
         # Создаём таблицы
         self.metadata.create_all(self.database_engine)
