@@ -35,7 +35,7 @@ class ClientDatabase:
         # Создаём движок базы данных, поскольку разрешено несколько клиентов одновременно, каждый должен иметь свою БД
         # Поскольку клиент мультипоточный необходимо отключить проверки на подключения с разных потоков,
         # иначе sqlite3.ProgrammingError
-        self.database_engine = create_engine(f'sqlite:///databases/db_{name}.db3',
+        self.database_engine = create_engine(f'sqlite:///{name}',
                                              echo=False,
                                              pool_recycle=7200,
                                              connect_args={'check_same_thread': False})
@@ -138,7 +138,7 @@ class ClientDatabase:
 
 
 if __name__ == '__main__':
-    test_db = ClientDatabase('test1')
+    test_db = ClientDatabase('databases/db_test1.db3')
     for i in ['test3', 'test4', 'test5']:
         test_db.add_contact(i)
     test_db.add_contact('test4')

@@ -13,7 +13,7 @@ from common.metaclasses import ServerVerifier
 from common.variables import *
 from common.utils import *
 from decorators import Log
-from databases.server_database import ServerStorage
+from server_database import ServerStorage
 from server_gui import MainWindow, gui_create_model, HistoryWindow, create_stat_model, ConfigWindow
 
 new_connection = False

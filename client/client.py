@@ -10,8 +10,7 @@ from common.metaclasses import ClientVerifier
 from common.variables import *
 from common.utils import get_message, send_message
 import logging
-import log.client_log_config
-from databases.client_database import ClientDatabase
+from client.client_database import ClientDatabase
 from decorators import Log
 from os import system
 
@@ -59,7 +58,7 @@ class Client(metaclass=ClientVerifier):
     def database_load(self):
         """Инициализатор базы данных. Запускается при запуске, загружает данные в базу с сервера."""
         # Инициализация БД
-        self.database = ClientDatabase(self.client_name)
+        self.database = ClientDatabase(f'databases/db_{self.client_name}.db3')
         # Загружаем список известных пользователей
         try:
             users_list = self.user_list()
