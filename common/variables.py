@@ -12,8 +12,8 @@ MAX_PACKAGE_LENGTH = 1024
 # Кодировка проекта
 ENCODING = 'utf-8'
 # Текущий уровень логирования
-LOGGING_FILE_LEVEL = logging.DEBUG
-LOGGING_STREAM_LEVEL = logging.ERROR
+LOGGING_FILE_LEVEL = logging.INFO
+LOGGING_STREAM_LEVEL = logging.INFO
 # База данных для хранения данных сервера:
 SERVER_DATABASE_PATH = 'sqlite:///databases'
 SERVER_DATABASE_FILE = 'server_base.db3'
@@ -44,9 +44,9 @@ USERS_REQUEST = 'get_users'
 RESPONSE_200 = {RESPONSE: 200}
 RESPONSE_202 = {
     RESPONSE: 202,
-    LIST_INFO: ''
+    LIST_INFO: None
 }
 RESPONSE_400 = {
     RESPONSE: 400,
-    ERROR: 'Bad Request'
+    ERROR: None
 }

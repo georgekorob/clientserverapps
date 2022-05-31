@@ -1,6 +1,6 @@
 import unittest
 from common.variables import RESPONSE, ERROR, USER, ACCOUNT_NAME, TIME, ACTION, PRESENCE
-from client.client import Client
+from client import Client
 
 
 class TestClient(unittest.TestCase):
