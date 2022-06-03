@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QAction, QLabel, QTableView, qApp
 
 class MainWindow(QMainWindow):
     """Основное окно."""
-    def __init__(self):
+    def __init__(self, database, server, config):
         super().__init__()
         self.initUI()
 
