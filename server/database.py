@@ -252,7 +252,7 @@ class ServerStorage:
 
 
 if __name__ == '__main__':
-    test_db = ServerStorage('databases/server_base.db3')
+    test_db = ServerStorage('../databases/server_base.db3')
     # выполняем 'подключение' пользователя
     test_db.user_login('client_1', '192.168.1.4', 8888)
     test_db.user_login('client_2', '192.168.1.5', 7777)

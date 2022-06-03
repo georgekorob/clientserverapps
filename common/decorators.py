@@ -11,7 +11,7 @@ LOGGER = logging.getLogger('server_logger') if sys.argv[0].find('server') != -1 
 
 
 class Log:
-    """Класс-декоратор"""
+    """Класс-декоратор для логирования вызовов функций."""
     def __call__(self, func_to_log):
         def decorated(*args, **kwargs):
             """Обертка"""
@@ -22,3 +22,12 @@ class Log:
                          f'функцией {inspect.stack()[1][3]}.', stacklevel=2)
             return func
         return decorated
+
+
+def login_required(func):
+    """Проверка авторизации на сервере."""
+
+    def checker(*args, **kwargs):
+        # TODO: написать декоратор
+        return func(*args, **kwargs)
+    return checker

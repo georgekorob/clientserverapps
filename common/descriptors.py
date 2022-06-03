@@ -20,7 +20,7 @@ class Port:
             logger.critical(
                 f'Попытка запуска сервера с указанием неподходящего порта {value}.'
                 f'Допустимые адреса с 1024 до 65535.')
-            exit(1)
+            raise TypeError('Некорректрый номер порта')
 
 
 class Host:
@@ -39,4 +39,4 @@ class Host:
         except Exception as e:
             logger.critical(
                 f'Попытка запуска сервера с указанием неподходящего адреса {value}.')
-            exit(1)
+            raise TypeError('Некорректрый адрес')
