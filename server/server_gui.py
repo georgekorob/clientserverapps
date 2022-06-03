@@ -6,26 +6,6 @@ from PyQt5.QtCore import Qt
 import os
 
 
-# GUI - Создание таблицы QModel, для отображения в окне программы.
-def gui_create_model(database):
-    list_users = database.active_users_list()
-    list = QStandardItemModel()
-    list.setHorizontalHeaderLabels(['Имя Клиента', 'IP Адрес', 'Порт', 'Время подключения'])
-    for row in list_users:
-        user, ip, port, time = row
-        user = QStandardItem(user)
-        user.setEditable(False)
-        ip = QStandardItem(ip)
-        ip.setEditable(False)
-        port = QStandardItem(str(port))
-        port.setEditable(False)
-        # Уберём милисекунды из строки времени, т.к. такая точность не требуется.
-        time = QStandardItem(str(time.replace(microsecond=0)))
-        time.setEditable(False)
-        list.appendRow([user, ip, port, time])
-    return list
-
-
 # Класс окна с историей пользователей
 class HistoryWindow(QDialog):
     def __init__(self):
