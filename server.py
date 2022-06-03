@@ -16,7 +16,10 @@ from common.variables import *
 from common.utils import *
 from common.decorators import Log
 from server.database import ServerStorage
-from server.server_gui import MainWindow, gui_create_model, HistoryWindow, create_stat_model, ConfigWindow
+from server.main_window import MainWindow
+from server.config_window import ConfigWindow
+from server.server_gui import gui_create_model, HistoryWindow, create_stat_model
+
 
 new_connection = False
 conflag_lock = threading.Lock()
