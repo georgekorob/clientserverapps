@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, DateTime
+from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, DateTime, Text
 from sqlalchemy.orm import mapper, sessionmaker
 from common.variables import *
 import datetime
@@ -11,9 +11,11 @@ class ServerStorage:
         """Отображение таблицы всех пользователей
         Экземпляр этого класса = запись в таблице AllUsers"""
 
-        def __init__(self, username):
+        def __init__(self, username, password_hash):
             self.name = username
             self.last_login = datetime.datetime.now()
+            self.password_hash = password_hash
+            self.pubkey = None
             self.id = None
 
     class ActiveUsers:
@@ -67,8 +69,9 @@ class ServerStorage:
         users_table = Table('Users', self.metadata,
                             Column('id', Integer, primary_key=True),
                             Column('name', String, unique=True),
-                            Column('last_login', DateTime)
-                            )
+                            Column('last_login', DateTime),
+                            Column('password_hash', String),
+                            Column('pubkey', Text))
 
         # Создаём таблицу активных пользователей
         active_users_table = Table('Active_users', self.metadata,
@@ -116,45 +119,68 @@ class ServerStorage:
         self.session.query(self.ActiveUsers).delete()
         self.session.commit()
 
-    def user_login(self, username, ip_address, port):
+    def user_login(self, username, ip_address, port, key):
         """Вход пользователя, записываем в базу факт входа"""
         print(username, ip_address, port)
         # Запрос в таблицу пользователей на наличие там пользователя с таким именем
         rez = self.session.query(self.AllUsers).filter_by(name=username)
 
-        # Если имя пользователя уже присутствует в таблице, обновляем время последнего входа
+        # Если имя пользователя уже присутствует в таблице, обновляем время последнего входа.
+        # Если клиент прислал новый ключ, сохраняем его.
         if rez.count():
             user = rez.first()
             user.last_login = datetime.datetime.now()
-        # Если нет, то создаздаём нового пользователя
+            if user.pubkey != key:
+                user.pubkey = key
         else:
-            user = self.AllUsers(username)
-            self.session.add(user)
-            # Комит здесь нужен, чтобы присвоился ID
-            self.session.commit()
-            user_in_history = self.UsersHistory(user.id)
-            self.session.add(user_in_history)
+            raise ValueError('Пользователь не зарегистрирован.')
 
         # Теперь можно создать запись в таблицу активных пользователей о факте входа.
-        new_active_user = self.ActiveUsers(user.id, ip_address, port, datetime.datetime.now())
-        self.session.add(new_active_user)
-
+        self.session.add(self.ActiveUsers(user.id, ip_address, port, datetime.datetime.now()))
         # и сохранить в историю входов
-        history = self.LoginHistory(user.id, datetime.datetime.now(), ip_address, port)
-        self.session.add(history)
-
+        self.session.add(self.LoginHistory(user.id, datetime.datetime.now(), ip_address, port))
         # Сохраняем изменения
         self.session.commit()
 
-    def user_logout(self, username):
-        """Фиксируем отключение пользователя"""
-        # Запрашиваем выходящего пользователя
-        # получаем запись из таблицы AllUsers
-        user = self.session.query(self.AllUsers).filter_by(name=username).first()
+    def add_user(self, name, password_hash):
+        '''Регистрация пользователя.'''
+        user_row = self.AllUsers(name, password_hash)
+        self.session.add(user_row)
+        self.session.commit()
+        self.session.add(self.UsersHistory(user_row.id))
+        self.session.commit()
 
+    def remove_user(self, name):
+        '''Удаление пользователя из базы.'''
+        user = self.session.query(self.AllUsers).filter_by(name=name).first()
+        self.session.query(self.ActiveUsers).filter_by(user=user.id).delete()
+        self.session.query(self.LoginHistory).filter_by(name=user.id).delete()
+        self.session.query(self.UsersContacts).filter_by(user=user.id).delete()
+        self.session.query(self.UsersContacts).filter_by(contact=user.id).delete()
+        self.session.query(self.UsersHistory).filter_by(user=user.id).delete()
+        self.session.query(self.AllUsers).filter_by(name=name).delete()
+        self.session.commit()
+
+    def get_hash(self, name):
+        '''Хэша пароля пользователя.'''
+        user = self.session.query(self.AllUsers).filter_by(name=name).first()
+        return user.passwd_hash
+
+    def get_pubkey(self, name):
+        '''Публичный ключ пользователя.'''
+        user = self.session.query(self.AllUsers).filter_by(name=name).first()
+        return user.pubkey
+
+    def check_user(self, name):
+        '''Существование пользователя.'''
+        return self.session.query(self.AllUsers).filter_by(name=name).count() > 0
+
+    def user_logout(self, username):
+        """Фиксируем отключение пользователя."""
+        # Запрашиваем выходящего пользователя
+        user = self.session.query(self.AllUsers).filter_by(name=username).first()
         # Удаляем его из таблицы активных пользователей.
         self.session.query(self.ActiveUsers).filter_by(user=user.id).delete()
-
         # Применяем изменения
         self.session.commit()
 
@@ -171,7 +197,7 @@ class ServerStorage:
         self.session.commit()
 
     def add_contact(self, user, contact):
-        """Добавляем контакт"""
+        """Добавление контакта."""
         user = self.session.query(self.AllUsers).filter_by(name=user).first()
         contact = self.session.query(self.AllUsers).filter_by(name=contact).first()
 
@@ -182,7 +208,7 @@ class ServerStorage:
         self.session.commit()
 
     def remove_contact(self, user, contact):
-        """Удаляем контакт"""
+        """Удаление контакта."""
         user = self.session.query(self.AllUsers).filter_by(name=user).first()
         contact = self.session.query(self.AllUsers).filter_by(name=contact).first()
 
@@ -190,16 +216,14 @@ class ServerStorage:
             return
         self.session.query(self.UsersContacts).filter(
             self.UsersContacts.user == user.id,
-            self.UsersContacts.contact == contact.id
-        ).delete()
+            self.UsersContacts.contact == contact.id).delete()
         self.session.commit()
 
     def users_list(self):
-        """Возвращает список известных пользователей со временем последнего входа."""
+        """Список известных пользователей со временем последнего входа."""
         query = self.session.query(
             self.AllUsers.name,
-            self.AllUsers.last_login
-        )
+            self.AllUsers.last_login)
         # Возвращаем список кортежей
         return query.all()
 
@@ -254,8 +278,8 @@ class ServerStorage:
 if __name__ == '__main__':
     test_db = ServerStorage('../databases/server_base.db3')
     # выполняем 'подключение' пользователя
-    test_db.user_login('client_1', '192.168.1.4', 8888)
-    test_db.user_login('client_2', '192.168.1.5', 7777)
+    test_db.user_login('client_1', '192.168.1.4', 8888, 'fdg')
+    test_db.user_login('client_2', '192.168.1.5', 7777, 'fdsg')
     # выводим список кортежей - активных пользователей
     print(test_db.active_users_list())
     # выполянем 'отключение' пользователя
