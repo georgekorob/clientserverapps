@@ -16,7 +16,7 @@ logger = logging.getLogger('client_logger')
 
 class ClientMainWindow(QMainWindow):
     """Основное окно."""
-    def __init__(self, database, transport):
+    def __init__(self, database, transport, keys):
         super().__init__()
         # основные переменные
         self.database = database

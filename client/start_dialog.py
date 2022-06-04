@@ -32,16 +32,16 @@ class UserNameDialog(QDialog):
         self.label_passwd.move(10, 55)
         self.label_passwd.setFixedSize(150, 15)
 
-        self.client_passwd = QLineEdit(self)
-        self.client_passwd.setFixedSize(154, 20)
-        self.client_passwd.move(10, 75)
-        self.client_passwd.setEchoMode(QLineEdit.Password)
+        self.client_password = QLineEdit(self)
+        self.client_password.setFixedSize(154, 20)
+        self.client_password.move(10, 75)
+        self.client_password.setEchoMode(QLineEdit.Password)
 
         self.show()
 
     def click(self):
         '''Обрабтчик кнопки ОК.'''
-        if self.client_name.text() and self.client_passwd.text():
+        if self.client_name.text() and self.client_password.text():
             self.ok_pressed = True
             qApp.exit()
 

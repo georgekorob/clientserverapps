@@ -22,7 +22,7 @@ class ClientTransport(threading.Thread, QObject):
     new_message = pyqtSignal(str)
     connection_lost = pyqtSignal()
 
-    def __init__(self, ip_address, port, database, username):
+    def __init__(self, ip_address, port, database, username, password, keys):
         threading.Thread.__init__(self)
         QObject.__init__(self)
 
