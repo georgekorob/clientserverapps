@@ -3,6 +3,7 @@ import sys
 import logging
 import traceback
 import datetime
+from socket import socket
 
 import log.server_log_config
 import log.client_log_config
@@ -28,6 +29,28 @@ def login_required(func):
     """Проверка авторизации на сервере."""
 
     def checker(*args, **kwargs):
-        # TODO: написать декоратор
+        # Импортировать необходимо тут, иначе ошибка рекурсивного импорта.
+        from server.core import MessageProcessor
+        from common.variables import ACTION, PRESENCE
+        # проверяем, что первый аргумент - экземпляр MessageProcessor
+        if isinstance(args[0], MessageProcessor):
+            found = False
+            for arg in args:
+                if isinstance(arg, socket):
+                    # Проверяем, что данный сокет есть в списке names класса MessageProcessor
+                    for client in args[0].names:
+                        if args[0].names[client] == arg:
+                            found = True
+                            break
+            if not found:
+                # В этом случае надо проверить, что передаваемые аргументы имеют presence сообщение.
+                for arg in args:
+                    if isinstance(arg, dict):
+                        if ACTION in arg and arg[ACTION] == PRESENCE:
+                            found = True
+                            break
+            # Если не авторизован и нет сообщения начала авторизации, то вызываем исключение.
+            if not found:
+                raise TypeError
         return func(*args, **kwargs)
     return checker
