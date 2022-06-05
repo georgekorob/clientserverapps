@@ -10,6 +10,11 @@ Welcome to Messenger's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   launcher
+   server
+   client
+   common
+   log
 
 
 Indices and tables
