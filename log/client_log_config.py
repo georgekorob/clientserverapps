@@ -3,7 +3,8 @@ import os
 import sys
 from common.variables import LOGGING_FILE_LEVEL, LOGGING_STREAM_LEVEL
 
-FORMATTER = logging.Formatter('%(asctime)s %(levelname)s %(filename)s %(message)s')
+FORMATTER = logging.Formatter('%(asctime)s %(levelname)s %(filename)s '
+                              '%(message)s')
 
 sys.path.append('../')
 PATH = os.path.dirname(os.path.abspath(__file__))

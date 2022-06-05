@@ -37,7 +37,8 @@ class StatWindow(QDialog):
 
         # Объект модели данных:
         list = QStandardItemModel()
-        list.setHorizontalHeaderLabels(['Имя Клиента', 'Последний раз входил', 'Сообщений отправлено',
+        list.setHorizontalHeaderLabels(['Имя Клиента', 'Последний раз входил',
+                                        'Сообщений отправлено',
                                         'Сообщений получено'])
         for row in stat_list:
             user, last_seen, sent, recvd = row

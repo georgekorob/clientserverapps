@@ -1,6 +1,7 @@
 import argparse
 from os import urandom
-from os.path import dirname as ospdirname, join as ospjoin, exists as ospexists, realpath as osprealpath
+from os.path import dirname as ospdirname, join as ospjoin, \
+    exists as ospexists, realpath as osprealpath
 from sys import argv as sysargv
 import threading
 
@@ -46,7 +47,8 @@ if __name__ == '__main__':
         if start_dialog.ok_pressed:
             client_name = start_dialog.client_name.text()
             client_password = start_dialog.client_password.text()
-            logger.debug(f'Using USERNAME = {client_name}, PASSWD = {client_password}.')
+            logger.debug(
+                f'Using USERNAME = {client_name}, PASSWD = {client_password}.')
         else:
             exit(0)
 
@@ -71,7 +73,13 @@ if __name__ == '__main__':
 
     # Транспорт
     try:
-        transport = ClientTransport(address, port, database, client_name, client_password, keys)
+        transport = ClientTransport(
+            address,
+            port,
+            database,
+            client_name,
+            client_password,
+            keys)
         logger.debug("Клиент подготовлен.")
     except ServerError as error:
         message = QMessageBox()
