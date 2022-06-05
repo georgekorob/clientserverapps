@@ -77,10 +77,10 @@ class MessageProcessor(threading.Thread):
                 self.remove_client(client)
 
             # Запрос известных пользователей
-            elif ACTION in message and message[ACTION] == USERS_REQUEST and ACCOUNT_NAME in message \
-                    and self.names[message[ACCOUNT_NAME]] == client:
+            elif message[ACTION] == USERS_REQUEST and \
+                    self.names[user] == client:
                 response = RESPONSE_202
-                response[LIST_INFO] = [user[0] for user in self.database.users_list()]
+                response[LIST_INFO] = [item[0] for item in self.database.users_list()]
                 self.try_send_message(client, response)
 
             # Сообщение
@@ -251,11 +251,7 @@ class MessageProcessor(threading.Thread):
                 except OSError:
                     self.remove_client(message[USER])
                 # добавляем пользователя в список активных и если у него изменился открытый ключ
-                self.database.user_login(
-                    message[USER],
-                    client_ip,
-                    client_port,
-                    message[USER][PUBLIC_KEY])
+                self.database.user_login(message[USER], client_ip, client_port, message[PUBLIC_KEY])
             else:
                 response = RESPONSE_400
                 response[ERROR] = 'Неверный пароль.'

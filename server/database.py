@@ -113,7 +113,8 @@ class ServerStorage:
         mapper(self.UsersHistory, users_history_table)
 
         # Создаём сессию
-        self.session = sessionmaker(bind=self.database_engine)()
+        Session = sessionmaker(bind=self.database_engine)
+        self.session = Session()
 
         # Если в таблице активных пользователей есть записи, то их необходимо удалить
         self.session.query(self.ActiveUsers).delete()
@@ -164,7 +165,7 @@ class ServerStorage:
     def get_hash(self, name):
         '''Хэша пароля пользователя.'''
         user = self.session.query(self.AllUsers).filter_by(name=name).first()
-        return user.passwd_hash
+        return user.password_hash
 
     def get_pubkey(self, name):
         '''Публичный ключ пользователя.'''
@@ -173,7 +174,7 @@ class ServerStorage:
 
     def check_user(self, name):
         '''Существование пользователя.'''
-        return self.session.query(self.AllUsers).filter_by(name=name).count() > 0
+        return bool(self.session.query(self.AllUsers).filter_by(name=name).count())
 
     def user_logout(self, username):
         """Фиксируем отключение пользователя."""

@@ -12,8 +12,8 @@ MAX_PACKAGE_LENGTH = 1024
 # Кодировка проекта
 ENCODING = 'utf-8'
 # Текущий уровень логирования
-LOGGING_FILE_LEVEL = logging.INFO
-LOGGING_STREAM_LEVEL = logging.INFO
+LOGGING_FILE_LEVEL = logging.DEBUG
+LOGGING_STREAM_LEVEL = logging.DEBUG
 # База данных для хранения данных сервера:
 SERVER_CONFIG = 'server.ini'
 
