@@ -14,13 +14,13 @@ class ClientDatabase:
             self.id = None
             self.username = user
 
-    class MessageHistory:
-        """Отображение таблицы истории сообщений"""
+    class MessageStat:
+        """Отображение таблицы статистики переданных сообщений"""
 
-        def __init__(self, from_user, to_user, message):
+        def __init__(self, contact, direction, message):
             self.id = None
-            self.from_user = from_user
-            self.to_user = to_user
+            self.contact = contact
+            self.direction = direction
             self.message = message
             self.date = datetime.datetime.now()
 
@@ -50,8 +50,8 @@ class ClientDatabase:
         # Создаём таблицу истории сообщений
         history = Table('message_history', self.metadata,
                         Column('id', Integer, primary_key=True),
-                        Column('from_user', String),
-                        Column('to_user', String),
+                        Column('contact', String),
+                        Column('direction', String),
                         Column('message', Text),
                         Column('date', DateTime))
 
@@ -65,7 +65,7 @@ class ClientDatabase:
 
         # Создаём отображения
         mapper(self.KnownUsers, users)
-        mapper(self.MessageHistory, history)
+        mapper(self.MessageStat, history)
         mapper(self.Contacts, contacts)
 
         # Создаём сессию
@@ -76,14 +76,18 @@ class ClientDatabase:
         self.session.commit()
 
     def add_contact(self, contact):
-        """Добавление контакта"""
+        """Добавление контакта."""
         if not self.session.query(self.Contacts).filter_by(name=contact).count():
             contact_row = self.Contacts(contact)
             self.session.add(contact_row)
             self.session.commit()
 
+    def contacts_clear(self):
+        '''Очищение таблицы со списком контактов.'''
+        self.session.query(self.Contacts).delete()
+
     def del_contact(self, contact):
-        """Удаления контакта"""
+        """Удаление контакта."""
         self.session.query(self.Contacts).filter_by(name=contact).delete()
 
     def add_users(self, users_list):
@@ -97,7 +101,7 @@ class ClientDatabase:
 
     def save_message(self, from_user, to_user, message):
         """Сохранение сообщений"""
-        message_row = self.MessageHistory(from_user, to_user, message)
+        message_row = self.MessageStat(from_user, to_user, message)
         self.session.add(message_row)
         self.session.commit()
 
@@ -111,26 +115,16 @@ class ClientDatabase:
 
     def check_user(self, user):
         """Наличие пользователя в известных"""
-        if self.session.query(self.KnownUsers).filter_by(username=user).count():
-            return True
-        else:
-            return False
+        return bool(self.session.query(self.KnownUsers).filter_by(username=user).count())
 
     def check_contact(self, contact):
         """Наличие пользователя в контактах"""
-        if self.session.query(self.Contacts).filter_by(name=contact).count():
-            return True
-        else:
-            return False
+        return bool(self.session.query(self.Contacts).filter_by(name=contact).count())
 
-    def get_history(self, from_who=None, to_who=None):
+    def get_history(self, contact):
         """История переписки"""
-        query = self.session.query(self.MessageHistory)
-        if from_who:
-            query = query.filter_by(from_user=from_who)
-        if to_who:
-            query = query.filter_by(to_user=to_who)
-        return [(history_row.from_user, history_row.to_user, history_row.message, history_row.date)
+        query = self.session.query(self.MessageStat).filter_by(contact=contact)
+        return [(history_row.contact, history_row.direction, history_row.message, history_row.date)
                 for history_row in query.all()]
 
 
