@@ -1,11 +1,14 @@
 import sys
+
 sys.path.append('../')
-from PyQt5.QtWidgets import QDialog, QLabel, QComboBox, QPushButton, QApplication
+from PyQt5.QtWidgets import QDialog, QLabel, QComboBox, QPushButton,\
+    QApplication
 from PyQt5.QtCore import Qt
 
 
 class DelContactDialog(QDialog):
     """Выбор контакта для удаления."""
+
     def __init__(self, database):
         super().__init__()
         self.database = database

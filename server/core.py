@@ -16,7 +16,8 @@ logger = logging.getLogger('server_logger')
 
 
 class MessageProcessor(threading.Thread):
-    '''Процессор сервера для обработки. Работает в качестве отдельного потока.'''
+    '''Процессор сервера для обработки. Работает в качестве отдельного
+    потока.'''
     port = Port()
     address = Host()
 
@@ -52,7 +53,7 @@ class MessageProcessor(threading.Thread):
 
             # Запрос контакт-листа
             elif message[ACTION] == GET_CONTACTS and \
-                 self.names[user] == client:
+                    self.names[user] == client:
                 response = RESPONSE_202
                 response[LIST_INFO] = self.database.get_contacts(user)
                 self.try_send_message(client, response)
@@ -80,12 +81,14 @@ class MessageProcessor(threading.Thread):
             elif message[ACTION] == USERS_REQUEST and \
                     self.names[user] == client:
                 response = RESPONSE_202
-                response[LIST_INFO] = [item[0] for item in self.database.users_list()]
+                response[LIST_INFO] = [item[0]
+                                       for item in self.database.users_list()]
                 self.try_send_message(client, response)
 
             # Сообщение
             elif message[ACTION] == MESSAGE and \
-                    all([w in message for w in [DESTINATION, MESSAGE_TEXT]]) and \
+                    all([w in message for w in [DESTINATION,
+                                                MESSAGE_TEXT]]) and \
                     self.names[user] == client:
                 if message[DESTINATION] in self.names:
                     self.database.process_message(user, message[DESTINATION])
@@ -93,7 +96,8 @@ class MessageProcessor(threading.Thread):
                     self.try_send_message(client, RESPONSE_200)
                 else:
                     response = RESPONSE_400
-                    response[ERROR] = 'Пользователь не зарегистрирован на сервере.'
+                    response[ERROR] = 'Пользователь не зарегистрирован ' \
+                                      'на сервере.'
                     self.try_send_message(client, response)
 
             # Запрос публичного ключа пользователя
@@ -104,7 +108,8 @@ class MessageProcessor(threading.Thread):
                     self.try_send_message(client, response)
                 else:
                     response = RESPONSE_400
-                    response[ERROR] = 'Нет публичного ключа для данного пользователя'
+                    response[ERROR] = 'Нет публичного ключа для данного ' \
+                                      'пользователя'
                     self.try_send_message(client, response)
             return
 
@@ -124,16 +129,19 @@ class MessageProcessor(threading.Thread):
             if self.names[message[DESTINATION]] in self.listen_sockets:
                 try:
                     send_message(self.names[message[DESTINATION]], message)
-                    logger.info(f'Отправлено сообщение пользователю {message[DESTINATION]} '
+                    logger.info(f'Отправлено сообщение '
+                                f'пользователю {message[DESTINATION]} '
                                 f'от пользователя {message[USER]}.')
                 except OSError:
                     self.remove_client(message[DESTINATION])
             else:
-                logger.error(f'Связь с клиентом {message[DESTINATION]} была потеряна. '
+                logger.error(f'Связь с клиентом {message[DESTINATION]} '
+                             f'была потеряна. '
                              f'Соединение закрыто, доставка невозможна.')
                 self.remove_client(self.names[message[DESTINATION]])
             return
-        logger.error(f'Пользователь {message[DESTINATION]} не зарегистрирован на сервере, '
+        logger.error(f'Пользователь {message[DESTINATION]} не зарегистрирован '
+                     f'на сервере, '
                      f'отправка сообщения невозможна.')
         raise ConnectionError
 
@@ -163,8 +171,8 @@ class MessageProcessor(threading.Thread):
             # наличие ожидающих клиентов
             try:
                 if self.clients:
-                    recv_data_lst, self.listen_sockets, self.error_sockets = select.select(
-                        self.clients, self.clients, [], 0)
+                    recv_data_lst, self.listen_sockets, self.error_sockets = \
+                        select.select(self.clients, self.clients, [], 0)
             except OSError as err:
                 logger.error(f'Ошибка работы с сокетами: {err.errno}')
 
@@ -172,10 +180,12 @@ class MessageProcessor(threading.Thread):
             if recv_data_lst:
                 for client_with_message in recv_data_lst:
                     try:
-                        self.process_client_message(get_message(client_with_message),
-                                                    client_with_message)
+                        self.process_client_message(
+                            get_message(client_with_message),
+                            client_with_message)
                     except (OSError, json.JSONDecodeError, TypeError) as err:
-                        logger.debug(f'Getting data from client exception.', exc_info=err)
+                        logger.debug(f'Getting data from client exception.',
+                                     exc_info=err)
                         self.remove_client(client_with_message)
 
     def try_send_message(self, client, response):
@@ -228,8 +238,10 @@ class MessageProcessor(threading.Thread):
             random_str = binascii.hexlify(os.urandom(64))
             # В словарь байты нельзя, декодируем (json.dumps -> TypeError)
             message_auth[DATA] = random_str.decode('ascii')
-            # Создаём хэш пароля и связки с рандомной строкой, сохраняем серверную версию ключа
-            hash = hmac.new(self.database.get_hash(message[USER]), random_str, 'MD5')
+            # Создаём хэш пароля и связки с рандомной строкой, сохраняем
+            # серверную версию ключа
+            hash = hmac.new(self.database.get_hash(message[USER]), random_str,
+                            'MD5')
             digest = hash.digest()
             logger.debug(f'Auth message = {message_auth}')
             try:
@@ -241,8 +253,10 @@ class MessageProcessor(threading.Thread):
                 sock.close()
                 return
             client_digest = binascii.a2b_base64(ans[DATA])
-            # Если ответ клиента корректный, то сохраняем его в список пользователей.
-            if RESPONSE in ans and ans[RESPONSE] == 511 and hmac.compare_digest(
+            # Если ответ клиента корректный, то сохраняем его в список
+            # пользователей.
+            if RESPONSE in ans and ans[
+                RESPONSE] == 511 and hmac.compare_digest(
                     digest, client_digest):
                 self.names[message[USER]] = sock
                 client_ip, client_port = sock.getpeername()
@@ -250,8 +264,10 @@ class MessageProcessor(threading.Thread):
                     send_message(sock, RESPONSE_200)
                 except OSError:
                     self.remove_client(message[USER])
-                # добавляем пользователя в список активных и если у него изменился открытый ключ
-                self.database.user_login(message[USER], client_ip, client_port, message[PUBLIC_KEY])
+                # добавляем пользователя в список активных и если у него
+                # изменился открытый ключ
+                self.database.user_login(message[USER], client_ip, client_port,
+                                         message[PUBLIC_KEY])
             else:
                 response = RESPONSE_400
                 response[ERROR] = 'Неверный пароль.'

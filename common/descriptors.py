@@ -18,7 +18,8 @@ class Port:
                 raise ValueError
         except Exception as e:
             logger.critical(
-                f'Попытка запуска сервера с указанием неподходящего порта {value}.'
+                f'Попытка запуска сервера с указанием неподходящего '
+                f'порта {value}.'
                 f'Допустимые адреса с 1024 до 65535.')
             raise TypeError('Некорректрый номер порта')
 
@@ -38,5 +39,6 @@ class Host:
             instance.__dict__[self.name] = value
         except Exception as e:
             logger.critical(
-                f'Попытка запуска сервера с указанием неподходящего адреса {value}.')
+                f'Попытка запуска сервера с указанием неподходящего '
+                f'адреса {value}.')
             raise TypeError('Некорректрый адрес')

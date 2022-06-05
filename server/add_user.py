@@ -1,5 +1,6 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMessageBox, QPushButton, QLineEdit, QLabel, QDialog
+from PyQt5.QtWidgets import QMessageBox, QPushButton, QLineEdit, QLabel, \
+    QDialog
 import binascii
 import hashlib
 
@@ -56,20 +57,28 @@ class RegisterUser(QDialog):
         self.show()
 
     def save_data(self):
-        '''Проверка правильности ввода и сохранения в базу нового пользователя.'''
+        '''Проверка правильности ввода и сохранения в базу нового
+        пользователя.'''
         if not self.client_name.text():
-            self.messages.critical(self, 'Ошибка', 'Не указано имя пользователя.')
+            self.messages.critical(self, 'Ошибка',
+                                   'Не указано имя пользователя.')
         elif self.client_passwd.text() != self.client_conf.text():
-            self.messages.critical(self, 'Ошибка', 'Введённые пароли не совпадают.')
+            self.messages.critical(self, 'Ошибка',
+                                   'Введённые пароли не совпадают.')
         elif self.database.check_user(self.client_name.text()):
-            self.messages.critical(self, 'Ошибка', 'Пользователь уже существует.')
+            self.messages.critical(self, 'Ошибка',
+                                   'Пользователь уже существует.')
         else:
-            # Генерируем хэш пароля, в качестве соли будем использовать логин в нижнем регистре.
+            # Генерируем хэш пароля, в качестве соли будем использовать
+            # логин в нижнем регистре.
             password_bytes = self.client_passwd.text().encode('utf-8')
             salt = self.client_name.text().lower().encode('utf-8')
-            password_hash = hashlib.pbkdf2_hmac('sha512', password_bytes, salt, 10000)
-            self.database.add_user(self.client_name.text(), binascii.hexlify(password_hash))
-            self.messages.information(self, 'Успех', 'Пользователь успешно зарегистрирован.')
+            password_hash = hashlib.pbkdf2_hmac('sha512', password_bytes, salt,
+                                                10000)
+            self.database.add_user(self.client_name.text(),
+                                   binascii.hexlify(password_hash))
+            self.messages.information(self, 'Успех',
+                                      'Пользователь успешно зарегистрирован.')
             # Рассылаем клиентам сообщение о необходимости обновить справичники
             self.server.service_update_lists()
             self.close()

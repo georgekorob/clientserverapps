@@ -9,6 +9,7 @@ from server.stat_window import StatWindow
 
 class MainWindow(QMainWindow):
     """Основное окно."""
+
     def __init__(self, database, server, config):
         super().__init__()
         self.database = database
@@ -80,7 +81,8 @@ class MainWindow(QMainWindow):
         self.show()
 
     def create_users_model(self):
-        '''Создание таблицы активных пользователей, для отображения в окне программы.'''
+        '''Создание таблицы активных пользователей, для отображения в окне
+        программы.'''
         list_users = self.database.active_users_list()
         list = QStandardItemModel()
         list.setHorizontalHeaderLabels(
