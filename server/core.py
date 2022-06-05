@@ -52,7 +52,7 @@ class MessageProcessor(threading.Thread):
 
             # Запрос контакт-листа
             elif message[ACTION] == GET_CONTACTS and \
-                 self.names[user] == client:
+                    self.names[user] == client:
                 response = RESPONSE_202
                 response[LIST_INFO] = self.database.get_contacts(user)
                 self.try_send_message(client, response)

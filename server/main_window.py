@@ -9,6 +9,7 @@ from server.stat_window import StatWindow
 
 class MainWindow(QMainWindow):
     """Основное окно."""
+
     def __init__(self, database, server, config):
         super().__init__()
         self.database = database

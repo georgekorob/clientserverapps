@@ -37,7 +37,6 @@ for f in os.listdir('log'):
 start_server()
 start_clients(2)
 
-
 # while True:
 #     ACTION = input('Выберите действие:'
 #                    'q - выход, '

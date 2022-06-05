@@ -5,6 +5,7 @@ import os
 
 class ConfigWindow(QDialog):
     """Окно настроек."""
+
     def __init__(self, config):
         super().__init__()
         self.config = config

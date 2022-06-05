@@ -3,6 +3,7 @@ import dis
 
 class ServerVerifier(type):
     """Метакласс для проверки соответствия сервера"""
+
     def __init__(self, clsname, bases, clsdict):
         methods = []
         attrs = []
@@ -40,6 +41,7 @@ class ServerVerifier(type):
 
 class ClientVerifier(type):
     """Метакласс для проверки корректности клиентов"""
+
     def __init__(self, clsname, bases, clsdict):
         methods = []
         for func in clsdict:
