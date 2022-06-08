@@ -34,7 +34,7 @@ def arg_parser(def_port, def_address):
 def config_load():
     """Загрузка файла конфигурации."""
     config = configparser.ConfigParser()
-    dir_path = os.path.dirname(os.path.realpath(__file__))
+    dir_path = os.getcwd()
     config.read(f"{dir_path}/{'server.ini'}")
     # Если конфиг файл загружен правильно, запускаемся,
     # иначе конфиг по умолчанию.

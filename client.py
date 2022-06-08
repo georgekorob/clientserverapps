@@ -1,7 +1,5 @@
 import argparse
-from os import urandom
-from os.path import dirname as ospdirname, join as ospjoin, \
-    exists as ospexists, realpath as osprealpath
+import os
 from sys import argv as sysargv
 import threading
 
@@ -57,10 +55,10 @@ if __name__ == '__main__':
                 f'имя пользователя: {client_name}')
 
     # Загружаем ключи с файла, если же файла нет, то генерируем новую пару.
-    dir_path = ospdirname(osprealpath(__file__))
-    key_file = ospjoin(dir_path, f'{client_name}.key')
-    if not ospexists(key_file):
-        keys = RSA.generate(2048, urandom)
+    dir_path = os.getcwd()
+    key_file = os.path.join(dir_path, f'{client_name}.key')
+    if not os.path.exists(key_file):
+        keys = RSA.generate(2048, os.urandom)
         with open(key_file, 'wb') as key:
             key.write(keys.export_key())
     else:
