@@ -11,7 +11,7 @@ from PyQt5.QtCore import pyqtSignal, QObject
 
 from common.errors import ServerError
 
-sys.path.append('../')
+sys.path.append('../../')
 from common.utils import *
 from common.variables import *
 

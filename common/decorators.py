@@ -1,12 +1,8 @@
 import inspect
 import sys
 import logging
-import traceback
 import datetime
 from socket import socket
-
-import log.server_log_config
-import log.client_log_config
 
 LOGGER = logging.getLogger('server_logger') if sys.argv[0].find(
     'server') != -1 else logging.getLogger('client_logger')
@@ -35,7 +31,7 @@ def login_required(func):
 
     def checker(*args, **kwargs):
         # Импортировать необходимо тут, иначе ошибка рекурсивного импорта.
-        from server.core import MessageProcessor
+        from server import MessageProcessor
         from common.variables import ACTION, PRESENCE
         # проверяем, что первый аргумент - экземпляр MessageProcessor
         if isinstance(args[0], MessageProcessor):

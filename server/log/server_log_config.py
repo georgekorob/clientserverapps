@@ -7,7 +7,7 @@ from common.variables import LOGGING_FILE_LEVEL, LOGGING_STREAM_LEVEL
 FORMATTER = logging.Formatter(
     '%(asctime)s %(levelname)s %(filename)s %(message)s')
 
-sys.path.append('../')
+sys.path.append('../../')
 PATH = os.getcwd()
 PATH = os.path.join(PATH, 'server.log')
 

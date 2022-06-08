@@ -6,13 +6,11 @@ import sys
 import threading
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
-import logging
-import log.server_log_config
 from common.variables import *
 from common.decorators import Log
-from server.core import MessageProcessor
-from server.database import ServerStorage
-from server.main_window import MainWindow
+from server import MessageProcessor
+from server.server.database import ServerStorage
+from server import MainWindow
 
 new_connection = False
 conflag_lock = threading.Lock()

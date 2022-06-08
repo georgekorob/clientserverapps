@@ -6,14 +6,14 @@ import threading
 from Cryptodome.PublicKey import RSA
 from PyQt5.QtWidgets import QApplication, QMessageBox
 
-from client.start_dialog import UserNameDialog
+from client import UserNameDialog
 from common.errors import ServerError
 from common.variables import *
 from common.decorators import Log
 import logging
-from client.database import ClientDatabase
-from client.transport import ClientTransport
-from client.main_window import ClientMainWindow
+from client.client.database import ClientDatabase
+from client import ClientTransport
+from client import ClientMainWindow
 
 logger = logging.getLogger('client_logger')
 sock_lock = threading.Lock()
