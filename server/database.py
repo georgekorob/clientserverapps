@@ -3,6 +3,7 @@ from sqlalchemy import create_engine, Table, Column, Integer, String, \
 from sqlalchemy.orm import mapper, sessionmaker
 from common.variables import *
 import datetime
+from sqlalchemy.sql import default_comparator
 
 
 class ServerStorage:
