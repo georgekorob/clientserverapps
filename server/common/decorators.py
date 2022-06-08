@@ -31,8 +31,8 @@ def login_required(func):
 
     def checker(*args, **kwargs):
         # Импортировать необходимо тут, иначе ошибка рекурсивного импорта.
-        from server import MessageProcessor
-        from common.variables import ACTION, PRESENCE
+        from server.core import MessageProcessor
+        from .variables import ACTION, PRESENCE
         # проверяем, что первый аргумент - экземпляр MessageProcessor
         if isinstance(args[0], MessageProcessor):
             found = False

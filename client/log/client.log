@@ -123,3 +123,26 @@
 2022-06-05 14:05:33,145 DEBUG transport.py Транспорт завершает работу.
 2022-06-05 14:05:34,051 DEBUG transport.py Транспорт завершает работу.
 2022-06-05 14:05:34,235 DEBUG transport.py Потеряно соединение с сервером.
+2022-06-08 22:32:36,352 INFO client.py Запущен клиент с парамертами: адрес сервера: 127.0.0.1,порт: 7777,имя пользователя: client1
+2022-06-08 22:32:36,478 DEBUG client.py Ключи загружены.
+2022-06-08 22:32:36,523 INFO transport.py Попытка подключения №1
+2022-06-08 22:32:36,536 DEBUG transport.py Соединение установлено.
+2022-06-08 22:32:36,536 DEBUG transport.py Установлено соединение с сервером
+2022-06-08 22:32:36,544 DEBUG transport.py Password hash ready: b'c117bca043efd1d0d45f3c5f6c9343c534653a841b33f258b929f297213fd52c9c908745afbd4208dfd35761a8a146bd45c116266e9753bc7797bf6bc998cef0'
+2022-06-08 22:32:36,545 DEBUG transport.py Сформировано presence сообщение для пользователя client1
+2022-06-08 22:32:36,545 DEBUG transport.py Presense message = {'action': 'presence', 'time': 1654716756.5451345, 'user': 'client1', 'pubkey': '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq6PC2zTKWHeTQhn8SkFA\n0OJNQ0rPIGC6qlM3qqFpQ8F1j39MU+HBBAEuYjKqSFz2N3ue0AHNC2Vlmabd3p3H\n30ccd5gt0u7pIHafPps1//2hugxNUvYh3xcagjEbg2BWLsp7l2M1dz24O0vaifhK\n6cq6GYKrEzoDXscpiMJOADR+LjxUNWZsIhtBBLOcUWPZO+9waeUjb4Q3O/hobJgP\nLeFRpAVjqH/vqq5auoylGJKNyLYAefeO2F8iw6Z5uaczCa0gxUHA/IZtqO+kA9jZ\nq75kH0qesVrNJ3w60nT8RCtmjSGP18e6n1LJUkrDepVRcs2crP8gQwn445GwBh60\nNwIDAQAB\n-----END PUBLIC KEY-----'}
+2022-06-08 22:32:37,055 DEBUG transport.py Server response = {'response': 511, 'bin': '9804a350ded4a3234137d3f1bfcad231e51897e7e5694b93964bb234ae87850b00fe1b73fb91c6aa8fceaeea97707702c8e20c69c097e0a1d26623549f29dbe7'}.
+2022-06-08 22:32:37,056 DEBUG transport.py Разбор сообщения от сервера: {'response': 511, 'bin': '9804a350ded4a3234137d3f1bfcad231e51897e7e5694b93964bb234ae87850b00fe1b73fb91c6aa8fceaeea97707702c8e20c69c097e0a1d26623549f29dbe7'}
+2022-06-08 22:32:37,056 DEBUG transport.py Принят неизвестный код подтверждения 511
+2022-06-08 22:32:37,062 DEBUG transport.py Разбор сообщения от сервера: {'response': 200}
+2022-06-08 22:32:37,065 INFO transport.py Соединение с сервером успешно установлено.
+2022-06-08 22:32:37,065 DEBUG transport.py Запрос списка известных пользователей client1
+2022-06-08 22:32:37,612 DEBUG transport.py Запрос контакт листа для пользователся Thread-6
+2022-06-08 22:32:37,613 DEBUG transport.py Сформирован запрос {'action': 'get_contacts', 'time': 1654716757.6132495, 'user': 'client1'}
+2022-06-08 22:32:38,120 DEBUG transport.py Получен ответ {'response': 202, 'data_list': ['client2']}
+2022-06-08 22:32:38,139 DEBUG client.py Клиент подготовлен.
+2022-06-08 22:32:38,171 DEBUG transport.py Запущен процесс - приёмник сообщений с сервера.
+2022-06-08 22:32:42,861 DEBUG transport.py Удаление контакта client2
+2022-06-08 22:32:43,196 DEBUG transport.py Разбор сообщения от сервера: {'response': 200}
+2022-06-08 22:32:43,202 INFO main_window.py Успешно удалён контакт client2
+2022-06-08 22:33:00,669 CRITICAL transport.py Потеряно соединение с сервером.
