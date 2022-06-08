@@ -1,6 +1,6 @@
 import argparse
 import os
-from sys import argv as sysargv
+import sys
 import threading
 
 from Cryptodome.PublicKey import RSA
@@ -28,13 +28,13 @@ def arg_parser():
     parser.add_argument('port', default=DEFAULT_PORT, type=int, nargs='?')
     parser.add_argument('-n', '--name', default=None, nargs='?')
     parser.add_argument('-p', '--password', default='', nargs='?')
-    namespace = parser.parse_args(sysargv[1:])
+    namespace = parser.parse_args(sys.argv[1:])
     return namespace.addr, namespace.port, namespace.name, namespace.password
 
 
 if __name__ == '__main__':
     address, port, client_name, client_password = arg_parser()
-    client_app = QApplication(sysargv)
+    client_app = QApplication(sys.argv)
 
     # Если имя пользователя не было указано в командной строке то запросим его
     start_dialog = UserNameDialog()
@@ -48,7 +48,7 @@ if __name__ == '__main__':
             logger.debug(
                 f'Using USERNAME = {client_name}, PASSWD = {client_password}.')
         else:
-            exit(0)
+            sys.exit(0)
 
     logger.info(f'Запущен клиент с парамертами: адрес сервера: {address},'
                 f'порт: {port},'
@@ -82,7 +82,7 @@ if __name__ == '__main__':
     except ServerError as error:
         message = QMessageBox()
         message.critical(start_dialog, 'Ошибка сервера', error.text)
-        exit(1)
+        sys.exit(1)
     transport.setDaemon(True)
     transport.start()
 
