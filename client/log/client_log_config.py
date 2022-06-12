@@ -8,7 +8,7 @@ FORMATTER = logging.Formatter('%(asctime)s %(levelname)s %(filename)s '
 
 sys.path.append('../../')
 PATH = os.getcwd()
-PATH = os.path.join(PATH, 'log/client.log')
+PATH = os.path.join(PATH, 'client.log')
 
 STREAM_HANDLER = logging.StreamHandler(sys.stderr)
 STREAM_HANDLER.setFormatter(FORMATTER)

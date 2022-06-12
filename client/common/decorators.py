@@ -19,8 +19,8 @@ class Log:
                 f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} '
                 f'Функция {func_to_log.__name__}() '
                 f'c параметрами {args}, {kwargs} '
-                f'вызвана из модуля {func_to_log.__module__} '
-                f'функцией {inspect.stack()[1][3]}.', stacklevel=2)
+                f'вызвана из модуля {func_to_log.__module__}')
+                # f'функцией {inspect.stack()[1][3]}.', stacklevel=2
             return func
 
         return decorated

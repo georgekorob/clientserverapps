@@ -68,7 +68,7 @@ if __name__ == '__main__':
     logger.debug("Ключи загружены.")
 
     # База данных
-    database = ClientDatabase(f'databases/db_{client_name}.db3')
+    database = ClientDatabase(f'db_{client_name}.db3')
 
     # Транспорт
     try:

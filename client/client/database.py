@@ -147,7 +147,7 @@ class ClientDatabase:
 
 
 if __name__ == '__main__':
-    test_db = ClientDatabase('databases/db_test1.db3')
+    test_db = ClientDatabase('db_test1.db3')
     for i in ['test3', 'test4', 'test5']:
         test_db.add_contact(i)
     test_db.add_contact('test4')

@@ -50,6 +50,9 @@ def config_load():
 
 
 def main():
+    path = os.environ['PATH']
+    print(path)
+
     config = config_load()
 
     listen_address, listen_port, gui_flag = arg_parser(
@@ -86,4 +89,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        print('__main__.error:', e)
+        input()
