@@ -1,8 +1,8 @@
 from sqlalchemy import create_engine, Table, Column, Integer, String, Text, \
     MetaData, DateTime
 from sqlalchemy.orm import mapper, sessionmaker
-from common.variables import *
 import datetime
+from sqlalchemy.sql import default_comparator
 
 
 class ClientDatabase:
@@ -147,7 +147,7 @@ class ClientDatabase:
 
 
 if __name__ == '__main__':
-    test_db = ClientDatabase('databases/db_test1.db3')
+    test_db = ClientDatabase('db_test1.db3')
     for i in ['test3', 'test4', 'test5']:
         test_db.add_contact(i)
     test_db.add_contact('test4')

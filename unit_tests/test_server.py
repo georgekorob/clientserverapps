@@ -1,6 +1,6 @@
 import unittest
 
-from common.variables import RESPONSE, ERROR, TIME, USER, ACCOUNT_NAME, ACTION, PRESENCE
+from client.common.variables import RESPONSE, ERROR, TIME, USER, ACCOUNT_NAME, ACTION, PRESENCE
 from server import Server
 
 

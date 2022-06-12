@@ -6,13 +6,13 @@ from PyQt5.QtCore import pyqtSlot, Qt
 from Cryptodome.Cipher import PKCS1_OAEP
 from Cryptodome.PublicKey import RSA
 import sys
-import logging
 import base64
+import logging
 
 from common.errors import ServerError
 from common.variables import *
 
-sys.path.append('../')
+sys.path.append('../../')
 from client.main_window_conv import Ui_MainClientWindow
 from client.add_contact import AddContactDialog
 from client.del_contact import DelContactDialog

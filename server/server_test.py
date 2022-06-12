@@ -4,12 +4,12 @@ import configparser
 import os
 import sys
 import threading
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication
 import logging
 import log.server_log_config
-from common.variables import *
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication
 from common.decorators import Log
+from common.variables import *
 from server.core import MessageProcessor
 from server.database import ServerStorage
 from server.main_window import MainWindow
@@ -34,7 +34,7 @@ def arg_parser(def_port, def_address):
 def config_load():
     """Загрузка файла конфигурации."""
     config = configparser.ConfigParser()
-    dir_path = os.path.dirname(os.path.realpath(__file__))
+    dir_path = os.getcwd()
     config.read(f"{dir_path}/{'server.ini'}")
     # Если конфиг файл загружен правильно, запускаемся,
     # иначе конфиг по умолчанию.
@@ -50,6 +50,9 @@ def config_load():
 
 
 def main():
+    path = os.environ['PATH']
+    print(path)
+
     config = config_load()
 
     listen_address, listen_port, gui_flag = arg_parser(
@@ -86,4 +89,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        print('__main__.error:', e)
+        input()

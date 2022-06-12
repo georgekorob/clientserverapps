@@ -1,6 +1,6 @@
 # Утилиты
 import json
-from common.decorators import Log
+from .decorators import Log
 from .variables import MAX_PACKAGE_LENGTH, ENCODING
 
 

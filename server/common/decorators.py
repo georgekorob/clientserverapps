@@ -1,12 +1,8 @@
 import inspect
 import sys
 import logging
-import traceback
 import datetime
 from socket import socket
-
-import log.server_log_config
-import log.client_log_config
 
 LOGGER = logging.getLogger('server_logger') if sys.argv[0].find(
     'server') != -1 else logging.getLogger('client_logger')
@@ -23,8 +19,8 @@ class Log:
                 f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} '
                 f'Функция {func_to_log.__name__}() '
                 f'c параметрами {args}, {kwargs} '
-                f'вызвана из модуля {func_to_log.__module__} '
-                f'функцией {inspect.stack()[1][3]}.', stacklevel=2)
+                f'вызвана из модуля {func_to_log.__module__}')
+                # f'функцией {inspect.stack()[1][3]}.', stacklevel=2
             return func
 
         return decorated
@@ -36,7 +32,7 @@ def login_required(func):
     def checker(*args, **kwargs):
         # Импортировать необходимо тут, иначе ошибка рекурсивного импорта.
         from server.core import MessageProcessor
-        from common.variables import ACTION, PRESENCE
+        from .variables import ACTION, PRESENCE
         # проверяем, что первый аргумент - экземпляр MessageProcessor
         if isinstance(args[0], MessageProcessor):
             found = False

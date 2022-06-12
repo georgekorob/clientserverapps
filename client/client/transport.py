@@ -5,15 +5,17 @@ import socket
 import sys
 import time
 import logging
+import log.client_log_config
 import json
 import threading
 from PyQt5.QtCore import pyqtSignal, QObject
 
+from common.decorators import Log
 from common.errors import ServerError
-
-sys.path.append('../')
-from common.utils import *
+from common.utils import send_message, get_message
 from common.variables import *
+
+sys.path.append('../../')
 
 logger = logging.getLogger('client_logger')
 socket_lock = threading.Lock()

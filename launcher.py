@@ -15,7 +15,7 @@ PROCESS = []
 def start_server():
     PROCESS.append(
         subprocess.Popen([path_python,
-                          'server.py',
+                          'server/server_test.py',
                           '-a',
                           address,
                           '-p',
@@ -27,7 +27,7 @@ def start_clients(count):
     for i in range(count):
         PROCESS.append(
             subprocess.Popen([path_python,
-                              'client.py',
+                              'client/client_test.py',
                               address,
                               port,
                               '-n',

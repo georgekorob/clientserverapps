@@ -1,8 +1,6 @@
 import argparse
-from os import urandom
-from os.path import dirname as ospdirname, join as ospjoin, \
-    exists as ospexists, realpath as osprealpath
-from sys import argv as sysargv
+import os
+import sys
 import threading
 
 from Cryptodome.PublicKey import RSA
@@ -13,6 +11,7 @@ from common.errors import ServerError
 from common.variables import *
 from common.decorators import Log
 import logging
+import log.client_log_config
 from client.database import ClientDatabase
 from client.transport import ClientTransport
 from client.main_window import ClientMainWindow
@@ -30,13 +29,13 @@ def arg_parser():
     parser.add_argument('port', default=DEFAULT_PORT, type=int, nargs='?')
     parser.add_argument('-n', '--name', default=None, nargs='?')
     parser.add_argument('-p', '--password', default='', nargs='?')
-    namespace = parser.parse_args(sysargv[1:])
+    namespace = parser.parse_args(sys.argv[1:])
     return namespace.addr, namespace.port, namespace.name, namespace.password
 
 
 if __name__ == '__main__':
     address, port, client_name, client_password = arg_parser()
-    client_app = QApplication(sysargv)
+    client_app = QApplication(sys.argv)
 
     # Если имя пользователя не было указано в командной строке то запросим его
     start_dialog = UserNameDialog()
@@ -50,17 +49,17 @@ if __name__ == '__main__':
             logger.debug(
                 f'Using USERNAME = {client_name}, PASSWD = {client_password}.')
         else:
-            exit(0)
+            sys.exit(0)
 
     logger.info(f'Запущен клиент с парамертами: адрес сервера: {address},'
                 f'порт: {port},'
                 f'имя пользователя: {client_name}')
 
     # Загружаем ключи с файла, если же файла нет, то генерируем новую пару.
-    dir_path = ospdirname(osprealpath(__file__))
-    key_file = ospjoin(dir_path, f'{client_name}.key')
-    if not ospexists(key_file):
-        keys = RSA.generate(2048, urandom)
+    dir_path = os.getcwd()
+    key_file = os.path.join(dir_path, f'{client_name}.key')
+    if not os.path.exists(key_file):
+        keys = RSA.generate(2048, os.urandom)
         with open(key_file, 'wb') as key:
             key.write(keys.export_key())
     else:
@@ -69,7 +68,7 @@ if __name__ == '__main__':
     logger.debug("Ключи загружены.")
 
     # База данных
-    database = ClientDatabase(f'databases/db_{client_name}.db3')
+    database = ClientDatabase(f'db_{client_name}.db3')
 
     # Транспорт
     try:
@@ -84,7 +83,7 @@ if __name__ == '__main__':
     except ServerError as error:
         message = QMessageBox()
         message.critical(start_dialog, 'Ошибка сервера', error.text)
-        exit(1)
+        sys.exit(1)
     transport.setDaemon(True)
     transport.start()
 
